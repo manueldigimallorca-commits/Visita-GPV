@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>DigiGPV Baleares | Consulta Pre-Visita</title>
+  
+  <!-- Optimización Móvil y PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DigiGPV">
+  <meta name="theme-color" content="#001e4d">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- PWA: manifest + iconos -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+
+  <!-- Tailwind CSS (CDN con Fallback CSS Offline integrado abajo) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- SheetJS: Motor de lectura de Excel en navegador móvil -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script>
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            },
+            colors: {
+              digi: {
+                navy: '#001e4d',
+                800: '#002b66',
+                700: '#003a8c',
+                blue: '#0049b7',
+                cyan: '#00b0ff',
+                yellow: '#ffcc00',
+                yellowDark: '#d9ad00',
+                surface: '#f8fafc',
+              }
+            }
+          }
+        }
+      };
+    }
+  </script>
+
+  <!-- BLINDAJE CSS 100% OFFLINE (Garantiza diseño completo incluso sin cobertura ni caché de CDN) -->
+  <style>
+    *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e2e8f0; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f1f5f9; color: #1e293b; -webkit-font-smoothing: antialiased; }
+    .pb-safe { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+    .pt-safe { padding-top: max(0.75rem, env(safe-area-inset-top)); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Utilidades críticas Offline Fallback */
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .inline-flex { display: inline-flex; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-1 { flex: 1 1 0%; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .justify-start { justify-content: flex-start; }
+    .grid { display: grid; }
+    .grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .gap-1 { gap: 0.25rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .gap-2 { gap: 0.5rem; }
+    .w-full { width: 100%; }
+    .max-w-md { max-width: 28rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .p-2 { padding: 0.5rem; }
+    .p-2\.5 { padding: 0.625rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .rounded { border-radius: 0.25rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .rounded-full { border-radius: 9999px; }
+    .border { border-width: 1px; }
+    .border-2 { border-width: 2px; }
+    .border-t { border-top-width: 1px; }
+    .border-b { border-bottom-width: 1px; }
+    .bg-white { background-color: #ffffff; }
+    .bg-slate-50 { background-color: #f8fafc; }
+    .bg-slate-100 { background-color: #f1f5f9; }
+    .bg-digi-navy { background-color: #001e4d; }
+    .bg-digi-800 { background-color: #002b66; }
+    .bg-digi-700 { background-color: #003a8c; }
+    .bg-digi-blue { background-color: #0049b7; }
+    .bg-digi-yellow { background-color: #ffcc00; }
+    .bg-emerald-50 { background-color: #ecfdf5; }
+    .bg-emerald-100 { background-color: #d1fae5; }
+    .bg-emerald-600 { background-color: #059669; }
+    .bg-amber-50 { background-color: #fffbeb; }
+    .bg-amber-100 { background-color: #fef3c7; }
+    .bg-rose-50 { background-color: #fff1f2; }
+    .bg-rose-100 { background-color: #ffe4e6; }
+    .bg-blue-50 { background-color: #eff6ff; }
+    .bg-blue-100 { background-color: #dbeafe; }
+    .bg-sky-50 { background-color: #f0f9ff; }
+    .bg-indigo-50 { background-color: #eef2ff; }
+    .bg-purple-50 { background-color: #faf5ff; }
+    .text-white { color: #ffffff; }
+    .text-digi-navy { color: #001e4d; }
+    .text-digi-blue { color: #0049b7; }
+    .text-digi-cyan { color: #00b0ff; }
+    .text-digi-yellow { color: #ffcc00; }
+    .text-slate-400 { color: #94a3b8; }
+    .text-slate-500 { color: #64748b; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-800 { color: #1e293b; }
+    .text-slate-900 { color: #0f172a; }
+    .text-emerald-800 { color: #065f46; }
+    .text-emerald-900 { color: #064e3b; }
+    .text-amber-900 { color: #78350f; }
+    .text-amber-950 { color: #451a03; }
+    .text-rose-800 { color: #9f1239; }
+    .text-rose-950 { color: #4c0519; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .font-black { font-weight: 900; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-base { font-size: 1rem; line-height: 1.5rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .uppercase { text-transform: uppercase; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+    .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+    .sticky { position: sticky; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .fixed { position: fixed; }
+    .top-0 { top: 0; }
+    .z-40 { z-index: 40; }
+    .z-50 { z-index: 50; }
+    .cursor-pointer { cursor: pointer; }
+    button { cursor: pointer; background: transparent; }
+    input, textarea { font-family: inherit; }
+
+    /* Tamaños y utilidades extra usadas en la app (refuerzo offline) */
+    .text-\[9px\] { font-size: 9px; line-height: 12px; }
+    .text-\[10px\] { font-size: 10px; line-height: 14px; }
+    .text-\[11px\] { font-size: 11px; line-height: 15px; }
+    .px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+    .gap-1\.5 { gap: 0.375rem; }
+    .gap-2\.5 { gap: 0.625rem; }
+    .leading-relaxed { line-height: 1.625; }
+    .leading-none { line-height: 1; }
+    .mb-1\.5 { margin-bottom: 0.375rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mt-1\.5 { margin-top: 0.375rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-5 { margin-top: 1.25rem; }
+    .p-6 { padding: 1.5rem; }
+    .pt-2 { padding-top: 0.5rem; }
+    .pt-3 { padding-top: 0.75rem; }
+    .w-7 { width: 1.75rem; }
+    .h-7 { height: 1.75rem; }
+    .w-14 { width: 3.5rem; }
+    .h-14 { height: 3.5rem; }
+    .bg-slate-600 { background-color: #475569; }
+    .text-slate-200 { color: #e2e8f0; }
+    .text-slate-300 { color: #cbd5e1; }
+    .border-slate-300 { border-color: #cbd5e1; }
+    .border-blue-200 { border-color: #bfdbfe; }
+    .border-amber-200 { border-color: #fde68a; }
+    .border-rose-200 { border-color: #fecdd3; }
+    .text-blue-900 { color: #1e3a8a; }
+    .text-emerald-600 { color: #059669; }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+
+    /* Iconos y utilidades de layout (refuerzo offline) */
+    svg { display: block; flex-shrink: 0; }
+    .w-2 { width: 0.5rem; } .h-2 { height: 0.5rem; }
+    .w-2\.5 { width: 0.625rem; } .h-2\.5 { height: 0.625rem; }
+    .w-3\.5 { width: 0.875rem; } .h-3\.5 { height: 0.875rem; }
+    .w-4 { width: 1rem; } .h-4 { height: 1rem; }
+    .w-5 { width: 1.25rem; } .h-5 { height: 1.25rem; }
+    .w-8 { width: 2rem; } .h-8 { height: 2rem; }
+    .shrink-0 { flex-shrink: 0; }
+    .mt-auto { margin-top: auto; }
+    .pt-6 { padding-top: 1.5rem; }
+    .border-digi-700 { border-color: #003a8c; }
+    .border-digi-800 { border-color: #002b66; }
+    .border-slate-700 { border-color: #334155; }
+    .bg-slate-900\/95 { background-color: rgba(15, 23, 42, 0.95); }
+    .max-w-xs { max-width: 20rem; }
+    .top-14 { top: 3.5rem; }
+    .inset-x-0 { left: 0; right: 0; }
+    .space-x-2\.5 > * + * { margin-left: 0.625rem; }
+    .transition-all { transition: all 0.3s ease; }
+    .duration-300 { transition-duration: 0.3s; }
+    .-translate-y-10 { transform: translateY(-2.5rem); }
+    .translate-y-0 { transform: translateY(0); }
+    .opacity-0 { opacity: 0; }
+    .opacity-100 { opacity: 1; }
+    .pointer-events-none { pointer-events: none; }
+    #toast.opacity-0 { opacity: 0; pointer-events: none; }
+    #toast.opacity-100 { opacity: 1; pointer-events: auto; }
+
+    /* Modal de ajustes: estilos propios para que funcione aunque Tailwind no cargue */
+    #settingsModal { position: fixed; inset: 0; z-index: 60; background: rgba(15, 23, 42, 0.62); display: flex; align-items: flex-end; justify-content: center; }
+    #settingsModal.hidden { display: none !important; }
+    #settingsPanel { background: #fff; width: 100%; max-width: 28rem; border-radius: 1rem 1rem 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28); max-height: 88vh; overflow-y: auto; }
+    @media (min-width: 640px) {
+      #settingsModal { align-items: center; padding: 1rem; }
+      #settingsPanel { border-radius: 1rem; }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 antialiased font-sans min-h-full flex flex-col selection:bg-digi-yellow selection:text-digi-navy">
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="sticky top-0 z-40 bg-digi-navy text-white shadow-md border-b border-digi-800 pt-safe">
+    <div class="max-w-md mx-auto px-4 py-2.5 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-lg bg-digi-yellow flex items-center justify-center font-black text-digi-navy text-xs tracking-tighter shadow-sm">
+          DIGI
+        </div>
+        <div>
+          <h1 class="text-sm font-bold tracking-tight leading-tight flex items-center gap-1.5">
+            GPV España
+            <span id="syncStatusBadge" class="text-[9px] bg-slate-600 text-slate-200 font-bold px-1.5 py-0.5 rounded uppercase">Vacío</span>
+          </h1>
+          <p class="text-[11px] text-slate-300 font-medium">GPV · Visita Táctica</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-1.5">
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="hidden" onchange="window.handleFileUpload(event)">
+        <input type="file" id="backupFileInput" accept=".json,application/json" class="hidden" onchange="window.handleImportBackup(event)">
+        
+        <button 
+          onclick="window.triggerUpload()" 
+          class="text-xs bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white px-2.5 py-1.5 rounded-lg border border-emerald-400 transition flex items-center gap-1 font-bold shadow-sm"
+          title="Subir nuevo Excel actualizado"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          <span>Excel</span>
+        </button>
+
+        <button 
+          onclick="window.resetSearch()" 
+          class="text-xs bg-digi-800 hover:bg-digi-700 active:scale-95 text-slate-200 px-2 py-1.5 rounded-lg border border-digi-700 transition"
+          title="Ir al buscador"
+        >
+          <svg class="w-3.5 h-3.5 text-digi-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </button>
+
+        <button 
+          onclick="window.openSettings()" 
+          class="text-xs bg-digi-800 hover:bg-digi-700 active:scale-95 text-slate-200 px-2 py-1.5 rounded-lg border border-digi-700 transition"
+          title="Ajustes y copia de seguridad"
+          aria-label="Ajustes y copia de seguridad"
+        >
+          <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= FLOATING TOAST NOTIFICATION ================= -->
+  <div id="toast" class="fixed top-14 inset-x-0 mx-auto max-w-xs z-50 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 flex items-center justify-center">
+    <div class="bg-slate-900/95 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-2xl border border-slate-700 flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-digi-yellow"></span>
+      <span id="toastMsg">Mensaje</span>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 1: HOME SEARCH VIEW ================= -->
+  <main id="homeView" class="flex-1 max-w-md w-full mx-auto p-4 flex flex-col justify-start">
+
+    <!-- ESTADO VACÍO: la app arranca sin cartera precargada -->
+    <div id="emptyState">
+      <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 text-center">
+        <div class="mx-auto w-14 h-14 rounded-2xl bg-digi-navy flex items-center justify-center mb-4 shadow-sm">
+          <svg class="w-7 h-7 text-digi-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+        </div>
+        <h2 class="text-base font-black text-digi-navy tracking-tight">Carga tu cartera</h2>
+        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+          Esta app no trae distribuidores de serie. Sube el Excel de <strong>tu</strong> cartera (CDM Móvil)
+          y el buscador se activará al instante.
+        </p>
+        <button
+          type="button"
+          onclick="window.triggerUpload()"
+          class="mt-5 w-full bg-digi-800 hover:bg-digi-700 active:bg-digi-navy text-white font-bold py-3.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-4 h-4 text-digi-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v12m0-12l-4 4m4-4l4 4M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"/>
+          </svg>
+          <span>Cargar mi Excel</span>
+        </button>
+        <p class="text-[10px] text-slate-400 mt-3">Formato .xlsx / .xls · Puedes reemplazarlo cuando quieras</p>
+      </div>
+
+      <div class="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-blue-900 leading-relaxed">
+        <strong>🔒 Tus datos son tuyos:</strong> la cartera y las notas de visita se guardan solo en este dispositivo.
+        Nada se envía a ningún servidor.
+      </div>
+
+      <div class="mt-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 leading-relaxed">
+        <strong>💾 ¿Vas a cambiar de móvil?</strong> Usa el botón de ajustes (⚙️) de la cabecera para exportar
+        una copia de seguridad antes.
+      </div>
+    </div>
+
+    <!-- ESTADO CON CARTERA CARGADA -->
+    <div id="loadedState" class="hidden">
+    
+    <!-- Database Status Bar -->
+    <div class="bg-white rounded-2xl shadow-xs border border-slate-200/90 p-3 mb-3.5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div>
+            <div class="text-xs font-bold text-slate-900">
+              <span id="dbDealersCount">0</span> <span id="dbDealersLabel">distribuidores en tu cartera</span>
+            </div>
+            <div id="dbLastUpdated" class="text-[10px] text-slate-500 font-medium">Base inicial cargada</div>
+          </div>
+        </div>
+        <button 
+          onclick="window.triggerUpload()" 
+          class="text-[11px] font-bold text-digi-blue hover:text-digi-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition"
+        >
+          Cambiar Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Search Card -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-digi-yellow"></div>
+          <h2 class="text-base font-bold text-digi-navy tracking-tight">Buscar Distribuidor</h2>
+        </div>
+
+        <!-- Conmutador rápido de Teclado 123 / ABC -->
+        <button 
+          type="button" 
+          id="kbModeBtn" 
+          onclick="window.toggleKeyboardMode()" 
+          class="text-[10px] font-black px-2 py-1 rounded-lg border border-slate-300 bg-slate-100 text-digi-navy hover:bg-slate-200 active:scale-95 transition flex items-center gap-1"
+          title="Alternar teclado numérico (ID/CP) o letras (Nombre/Calle)"
+        >
+          <span>⌨️</span>
+          <span id="kbModeLabel">Modo: 123 (ID)</span>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mb-4">
+        Escribe el ID, nombre o rótulo guardado y toca el resultado:
+      </p>
+
+      <form onsubmit="window.doSearch(event)" class="space-y-3 relative">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-5 h-5 text-digi-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+            </svg>
+          </div>
+
+          <input 
+            type="search" 
+            inputmode="numeric" 
+            id="searchInput" 
+            placeholder="Introduce ID (ej: 13481810)" 
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            oninput="window.handleLiveSearch(this.value)"
+            class="w-full pl-11 pr-10 py-3.5 bg-slate-50 border-2 border-slate-300 rounded-xl text-base font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:bg-white focus:outline-none focus:border-digi-blue focus:ring-4 focus:ring-digi-blue/10 transition tracking-wider"
+          >
+
+          <button 
+            type="button" 
+            id="clearSearchBtn" 
+            onclick="window.clearSearchField()" 
+            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Live Instant Suggestions List -->
+        <div id="autocompleteList" class="hidden bg-white border border-slate-300 rounded-xl shadow-xl overflow-hidden divide-y divide-slate-100 max-h-60 overflow-y-auto no-scrollbar">
+          <!-- Dynamically inserted suggestions -->
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full bg-digi-800 hover:bg-digi-700 active:bg-digi-navy text-white font-bold py-3.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
+        >
+          <span>Abrir Ficha Táctica</span>
+          <svg class="w-4 h-4 text-digi-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Not found error box -->
+      <div id="searchError" class="hidden mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
+        <div class="font-bold flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span>Distribuidor no encontrado</span>
+        </div>
+        <p class="mt-1 text-slate-600 text-[11px]" id="searchErrorMsg">
+          Verifica que el número sea correcto o sube un nuevo Excel con el botón superior.
+        </p>
+      </div>
+    </div>
+
+    <!-- Recent Searches -->
+    <div id="recentsSection" class="mt-4">
+      <div class="flex items-center justify-between px-1 mb-2">
+        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-digi-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Últimas Consultas
+        </h3>
+        <button onclick="window.clearRecents()" class="text-[10px] text-slate-400 hover:text-rose-600 font-medium">Borrar</button>
+      </div>
+
+      <div id="recentsList" class="flex flex-col gap-1.5">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    </div><!-- /loadedState -->
+
+    <!-- Footer helper -->
+    <div class="mt-auto pt-6 text-center text-[11px] text-slate-400">
+      <p class="font-medium text-slate-500">Tus datos se quedan en este dispositivo</p>
+      <p class="text-[10px] text-slate-400 mt-0.5">Sin cuentas, sin servidores, sin sincronización</p>
+    </div>
+  </main>
+
+
+  <!-- ================= VIEW 2: DEDICATED DEALER TACTICAL CARD ================= -->
+  <main id="dealerView" class="hidden flex-1 max-w-md w-full mx-auto p-3 flex flex-col space-y-3 pb-safe">
+    
+    <!-- Top Back Button -->
+    <div class="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-xs">
+      <button 
+        onclick="window.resetSearch()" 
+        class="inline-flex items-center gap-1.5 text-xs font-black text-digi-navy hover:text-digi-blue active:scale-95 py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 transition"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span>← Buscar otro dealer</span>
+      </button>
+
+      <span id="dIdBadge" class="font-mono text-xs font-black bg-digi-navy text-digi-yellow px-2.5 py-1 rounded-lg">
+        ID: 0000000
+      </span>
+    </div>
+
+    <!-- Dealer Info Header -->
+    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-digi-navy via-digi-blue to-digi-yellow"></div>
+      
+      <div class="pt-1">
+        <h2 id="dName" class="text-lg font-black text-slate-900 leading-snug tracking-tight">
+          Nombre del Distribuidor
+        </h2>
+
+        <!-- ALIAS / NOMBRE COMERCIAL Y CALLE (Persistente en móvil) -->
+        <div class="mt-1.5">
+          <div id="aliasDisplayRow" class="flex items-center gap-1.5 flex-wrap">
+            <span id="dAliasBadge" class="hidden text-xs font-bold text-digi-navy bg-amber-100/90 border border-amber-300 px-2.5 py-0.5 rounded-lg inline-flex items-center gap-1">
+              <span>🏪</span>
+              <span id="dAliasText"></span>
+            </span>
+            <button 
+              type="button" 
+              id="editAliasBtn" 
+              onclick="window.toggleAliasEditor()" 
+              class="text-[11px] font-bold text-digi-blue hover:text-digi-navy bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-md transition"
+            >
+              + Añadir nombre comercial / calle
+            </button>
+          </div>
+
+          <!-- Editor Inline de Alias -->
+          <div id="aliasEditorBox" class="hidden mt-2 flex items-center gap-1.5">
+            <input 
+              type="text" 
+              id="aliasInput" 
+              placeholder="Ej: Locutorio Baraka - C/ Manacor 42" 
+              class="flex-1 text-xs font-semibold px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg focus:bg-white focus:outline-none focus:border-digi-blue"
+            >
+            <button 
+              type="button" 
+              onclick="window.saveDealerAlias()" 
+              class="text-xs font-bold bg-digi-navy text-digi-yellow px-3 py-1.5 rounded-lg"
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-500 font-medium mt-2 flex items-center gap-1">
+          <svg class="w-3.5 h-3.5 text-digi-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          </svg>
+          <span id="dLocation">07004 · Palma Norte (Palma de Mallorca)</span>
+        </p>
+
+        <!-- Status Badges Strip -->
+        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+          <span id="dHuellaBadge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-blue-100 text-blue-900 border border-blue-200">
+            Zona Smart
+          </span>
+          <span id="dFibraBadge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200">
+            Sin Acceso Fibra
+          </span>
+          <span id="dCatPrepagoBadge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-amber-100 text-amber-900 border border-amber-200">
+            Pre: Beginner
+          </span>
+          <span id="dAntiguedadBadge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-slate-100 text-slate-700 border border-slate-200">
+            📅 Alta: --
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tactical Alert / Pre-Visit Focus -->
+    <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs">
+      <div class="font-black text-xs uppercase tracking-tight flex items-center gap-1.5 mb-2">
+        <span id="dTacticalTitle">🎯 FOCO TÁCTICO PRE-VISITA</span>
+      </div>
+      <ul id="dTacticalList" class="text-xs space-y-1.5 list-disc list-inside leading-relaxed font-medium">
+        <!-- Injected via JS -->
+      </ul>
+    </div>
+
+    <!-- SALES EVOLUTION CARDS -->
+    <div class="space-y-2.5">
+      <div class="flex items-center justify-between px-1">
+        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          Evolución de Ventas
+        </h3>
+        <span class="text-[10px] text-slate-400 font-semibold">M-3 ➔ M-2 ➔ M-1 ➔ ACT ➔ Proy | LY</span>
+      </div>
+
+      <!-- 1. PREPAGO -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span class="text-xs font-black text-slate-900">PREPAGO</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span id="lyPrepagoBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
+            <span id="trendPrepagoBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">
+              Tendencia
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="pre_m3" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="pre_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="pre_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="bg-amber-100/70 rounded py-0.5">
+            <span class="block text-[9px] text-amber-900 font-black uppercase">ACT</span>
+            <span id="pre_act" class="text-xs font-black text-amber-950">0</span>
+          </div>
+          <div class="bg-amber-50 rounded py-0.5">
+            <span class="block text-[9px] text-amber-800 font-bold uppercase">PROY</span>
+            <span id="pre_proy" class="text-xs font-black text-amber-900">0</span>
+          </div>
+          <div id="pre_ly_box" class="rounded py-0.5">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
+            <span id="pre_ly" class="text-xs font-bold text-slate-500">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. FIBRA SMART (Se compacta automáticamente si no tiene acceso ni ventas) -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-digi-cyan"></span>
+            <span class="text-xs font-black text-slate-900">FIBRA SMART</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span id="lyFibraBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
+            <span id="trendFibraBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900">
+              Tendencia
+            </span>
+          </div>
+        </div>
+
+        <!-- Vista compacta si NO tiene acceso a Fibra -->
+        <div id="fibraCompactBar" class="hidden text-[11px] text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 font-medium">
+          Sin acceso comercial a Fibra actualmente en este punto.
+        </div>
+
+        <!-- Tabla 6 columnas si tiene acceso o histórico -->
+        <div id="fibraGrid" class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="fib_m3" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="fib_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="fib_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="bg-sky-100/70 rounded py-0.5">
+            <span class="block text-[9px] text-sky-900 font-black uppercase">ACT</span>
+            <span id="fib_act" class="text-xs font-black text-sky-950">0</span>
+          </div>
+          <div class="bg-sky-50 rounded py-0.5">
+            <span class="block text-[9px] text-sky-800 font-bold uppercase">PROY</span>
+            <span id="fib_proy" class="text-xs font-black text-sky-900">0</span>
+          </div>
+          <div id="fib_ly_box" class="rounded py-0.5">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
+            <span id="fib_ly" class="text-xs font-bold text-slate-500">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MÓVIL CONTRATO -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-digi-blue"></span>
+            <span class="text-xs font-black text-slate-900">MÓVIL CONTRATO</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span id="lyMovilBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
+            <span id="trendMovilBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+              Tendencia
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="mov_m3" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="mov_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="mov_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="bg-indigo-100/70 rounded py-0.5">
+            <span class="block text-[9px] text-indigo-900 font-black uppercase">ACT</span>
+            <span id="mov_act" class="text-xs font-black text-indigo-950">0</span>
+          </div>
+          <div class="bg-indigo-50 rounded py-0.5">
+            <span class="block text-[9px] text-indigo-800 font-bold uppercase">PROY</span>
+            <span id="mov_proy" class="text-xs font-black text-indigo-900">0</span>
+          </div>
+          <div id="mov_ly_box" class="rounded py-0.5">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
+            <span id="mov_ly" class="text-xs font-bold text-slate-500">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. DIGI TV (Se oculta automáticamente cuando no aplica para evitar scroll) -->
+      <div id="cardDigiTv" class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
+            <span class="text-xs font-black text-slate-900">DIGI TV</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-violet-50 text-violet-800">
+            Servicio TV
+          </span>
+        </div>
+
+        <div class="grid grid-cols-5 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="tv_m3" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="tv_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="tv_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="bg-purple-100/70 rounded py-0.5">
+            <span class="block text-[9px] text-purple-900 font-black uppercase">ACT</span>
+            <span id="tv_act" class="text-xs font-black text-purple-950">0</span>
+          </div>
+          <div class="bg-purple-50 rounded py-0.5">
+            <span class="block text-[9px] text-purple-800 font-bold uppercase">PROY</span>
+            <span id="tv_proy" class="text-xs font-black text-purple-900">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISIT NOTES (Con Botones Rápidos 1-Toque) & WHATSAPP REPORT -->
+    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+          <svg class="w-4 h-4 text-digi-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          <span>Notas Rápidas de la Visita</span>
+        </div>
+        <span id="notesSavedAlert" class="text-[10px] text-emerald-600 font-bold hidden">Guardado ✓</span>
+      </div>
+
+      <!-- Botones Rápidos 1-Toque -->
+      <div class="flex flex-wrap gap-1.5">
+        <button type="button" onclick="window.appendQuickNote('Dejadas SIMs de reposición.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-digi-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
+          + Stock SIMs
+        </button>
+        <button type="button" onclick="window.appendQuickNote('PLV y cartelería revisados en mostrador.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-digi-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
+          + PLV colocado
+        </button>
+        <button type="button" onclick="window.appendQuickNote('Reforzado argumento comercial Fibra SMART.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-digi-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
+          + Push Fibra
+        </button>
+        <button type="button" onclick="window.appendQuickNote('Visita seguimiento OK, sin incidencias.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-digi-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
+          + Sin incidencias
+        </button>
+        <button type="button" onclick="window.appendQuickNote('Local cerrado en horario de visita.')" class="text-[10px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 px-2 py-1 rounded-lg active:scale-95 transition">
+          + Cerrado
+        </button>
+      </div>
+
+      <textarea 
+        id="visitNotes" 
+        rows="2" 
+        oninput="window.handleNoteInput()" 
+        placeholder="Toca las etiquetas de arriba o escribe tus notas..."
+        class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-digi-blue focus:ring-2 focus:ring-digi-blue/10 transition"
+      ></textarea>
+
+      <!-- Quick Action: Share to WhatsApp -->
+      <button 
+        onclick="window.copyWhatsAppReport()" 
+        class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+        <span>Copiar Resumen para WhatsApp</span>
+      </button>
+    </div>
+
+    <!-- Extra Bottom Padding for mobile navigation bars -->
+    <div class="h-8"></div>
+  </main>
+
+
+  <!-- ================= MODAL AJUSTES / COPIA DE SEGURIDAD ================= -->
+  <div id="settingsModal" class="hidden" onclick="if (event.target === this) window.closeSettings()">
+    <div id="settingsPanel">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+        <h2 class="text-sm font-black text-digi-navy">Ajustes y copia de seguridad</h2>
+        <button
+          type="button"
+          onclick="window.closeSettings()"
+          aria-label="Cerrar ajustes"
+          class="text-slate-400 hover:text-slate-700 text-base leading-none px-2 py-1 rounded-lg hover:bg-slate-100"
+        >✕</button>
+      </div>
+
+      <div class="p-4">
+        <p class="text-[11px] text-slate-500 leading-relaxed mb-3">
+          Todo se guarda en este navegador. Exporta una copia antes de cambiar de dispositivo
+          o de borrar los datos del navegador.
+        </p>
+
+        <button
+          type="button"
+          onclick="window.exportBackup()"
+          class="w-full flex items-center justify-between gap-2 bg-white border border-slate-300 rounded-xl px-3 py-3 text-left mb-2"
+        >
+          <span>
+            <span class="block text-xs font-bold text-slate-900">Exportar copia de seguridad</span>
+            <span class="block text-[10px] text-slate-500">Cartera + notas + rótulos (.json)</span>
+          </span>
+          <span class="text-digi-blue font-black text-base">⬇</span>
+        </button>
+
+        <button
+          type="button"
+          onclick="window.triggerImportBackup()"
+          class="w-full flex items-center justify-between gap-2 bg-white border border-slate-300 rounded-xl px-3 py-3 text-left mb-2"
+        >
+          <span>
+            <span class="block text-xs font-bold text-slate-900">Importar copia de seguridad</span>
+            <span class="block text-[10px] text-slate-500">Restaura desde un archivo .json</span>
+          </span>
+          <span class="text-digi-blue font-black text-base">⬆</span>
+        </button>
+
+        <button
+          type="button"
+          onclick="window.triggerUpload()"
+          class="w-full flex items-center justify-between gap-2 bg-white border border-slate-300 rounded-xl px-3 py-3 text-left mb-2"
+        >
+          <span>
+            <span class="block text-xs font-bold text-slate-900">Cargar / cambiar Excel</span>
+            <span class="block text-[10px] text-slate-500">Sustituye la cartera, conserva tus notas</span>
+          </span>
+          <span class="text-emerald-600 font-black text-base">📄</span>
+        </button>
+
+        <div class="pt-3 mt-3 border-t border-slate-200">
+          <button
+            type="button"
+            id="installAppBtn"
+            onclick="window.installApp()"
+            class="hidden w-full flex items-center justify-between gap-2 bg-digi-navy text-white rounded-xl px-3 py-3 text-left mb-2"
+          >
+            <span>
+              <span class="block text-xs font-bold">Instalar en el móvil</span>
+              <span class="block text-[10px] text-slate-300">Acceso directo desde la pantalla de inicio</span>
+            </span>
+            <span class="text-digi-yellow font-black text-base">📲</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="window.wipeAllData()"
+            class="w-full bg-rose-50 border border-rose-200 text-rose-800 rounded-xl px-3 py-3 text-xs font-bold text-left"
+          >
+            Borrar todos los datos de este dispositivo
+          </button>
+          <p class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+            Elimina cartera, notas, rótulos e historial. No se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
+        <span>DigiGPV Visor Táctico · v4</span>
+        <span>Sin datos precargados</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LOGIC & REAL EXCEL PARSER ================= -->
+  <script>
+
+    // STORAGE CONSTANTS (v4 incluye Fecha Firma y mejoras tácticas)
+    const STORAGE_KEY_DB = 'digi_dealers_db_v4';
+    const STORAGE_KEY_META = 'digi_dealers_meta_v4';
+    const STORAGE_KEY_RECENTS = 'digi_recents_ids';
+    const NOTES_KEY_PREFIX = 'notes_';
+    const ALIAS_KEY_PREFIX = 'digi_alias_';
+
+    // APPLICATION STATE
+    let CURRENT_DEALERS_MAP = {};
+    let activeDealer = null;
+    let noteDebounceTimer = null;
+    let isNumericKeyboard = true;
+
+    const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+    // --- GLOBAL INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      localStorage.removeItem('digi_dealers_db');
+      localStorage.removeItem('digi_dealers_meta');
+      localStorage.removeItem('digi_dealers_db_v2');
+      localStorage.removeItem('digi_dealers_meta_v2');
+      localStorage.removeItem('digi_dealers_db_v3');
+      localStorage.removeItem('digi_dealers_meta_v3');
+
+      loadDatabase();
+      renderRecents();
+
+      // Delegación: cualquier fila con data-dealer-id abre su ficha (sin onclick inline)
+      document.addEventListener('click', (ev) => {
+        const row = ev.target && ev.target.closest ? ev.target.closest('[data-dealer-id]') : null;
+        if (!row) return;
+        ev.preventDefault();
+        window.selectDealer(row.getAttribute('data-dealer-id'));
+      });
+
+      if (Object.keys(CURRENT_DEALERS_MAP).length > 0) {
+        const input = document.getElementById('searchInput');
+        if (input) input.focus();
+      }
+    });
+
+    // La app arranca SIEMPRE vacía: no hay cartera precargada.
+    // Cada comercial sube su propio Excel y se guarda solo en su dispositivo.
+    function loadDatabase() {
+      let stored = null;
+      try { stored = localStorage.getItem(STORAGE_KEY_DB); } catch(e) {}
+
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+            CURRENT_DEALERS_MAP = parsed;
+            let meta = {};
+            try { meta = JSON.parse(localStorage.getItem(STORAGE_KEY_META) || '{}') || {}; } catch(e) {}
+            updateStatusUI(Object.keys(CURRENT_DEALERS_MAP).length, meta.lastUpdated || '--', meta.fileName || 'Excel cargado', meta);
+            applyStateUI(true);
+            return;
+          }
+        } catch(e) {
+          console.error("Error parseando DB de localStorage", e);
+        }
+      }
+
+      CURRENT_DEALERS_MAP = {};
+      updateStatusUI(0, '', '', {});
+      applyStateUI(false);
+    }
+
+    // Alterna entre la pantalla de bienvenida (sin cartera) y el buscador
+    function applyStateUI(hasData) {
+      const empty = document.getElementById('emptyState');
+      const loaded = document.getElementById('loadedState');
+      if (empty) empty.classList.toggle('hidden', !!hasData);
+      if (loaded) loaded.classList.toggle('hidden', !hasData);
+
+      if (!hasData) {
+        const input = document.getElementById('searchInput');
+        if (input) input.value = '';
+      }
+    }
+
+    function updateStatusUI(count, dateStr, fileName, meta) {
+      const countEl = document.getElementById('dbDealersCount');
+      const dateEl = document.getElementById('dbLastUpdated');
+      const badge = document.getElementById('syncStatusBadge');
+      const label = document.getElementById('dbDealersLabel');
+      meta = meta || {};
+
+      if (!count) {
+        if (countEl) countEl.textContent = '0';
+        if (label) label.textContent = 'distribuidores en tu cartera';
+        if (dateEl) dateEl.textContent = 'Sin cartera cargada todavía';
+        if (badge) {
+          badge.textContent = 'Vacío';
+          badge.className = 'text-[9px] bg-slate-600 text-slate-200 font-bold px-1.5 py-0.5 rounded uppercase';
+        }
+        return;
+      }
+
+      if (countEl) countEl.textContent = count;
+      if (label) label.textContent = 'distribuidores en tu cartera';
+
+      const who = meta.comercial ? `${meta.comercial} · ` : '';
+      if (dateEl) {
+        dateEl.textContent = `${who}Actualizado: ${dateStr}${fileName ? ' (' + fileName + ')' : ''}`;
+      }
+      if (badge) {
+        badge.textContent = 'Excel Activo';
+        badge.className = 'text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded uppercase';
+      }
+    }
+
+    // --- CONMUTADOR TECLADO 123 / ABC ---
+    window.toggleKeyboardMode = function() {
+      isNumericKeyboard = !isNumericKeyboard;
+      const input = document.getElementById('searchInput');
+      const label = document.getElementById('kbModeLabel');
+      const btn = document.getElementById('kbModeBtn');
+
+      if (isNumericKeyboard) {
+        input.setAttribute('inputmode', 'numeric');
+        input.placeholder = "Introduce ID (ej: 13481810)";
+        label.textContent = "Modo: 123 (ID)";
+        btn.className = "text-[10px] font-black px-2 py-1 rounded-lg border border-slate-300 bg-slate-100 text-digi-navy transition flex items-center gap-1";
+      } else {
+        input.setAttribute('inputmode', 'search');
+        input.placeholder = "Escribe nombre, rótulo o calle...";
+        label.textContent = "Modo: ABC (Texto)";
+        btn.className = "text-[10px] font-black px-2 py-1 rounded-lg border border-digi-blue bg-blue-50 text-digi-blue transition flex items-center gap-1";
+      }
+      input.focus();
+    };
+
+    // --- ALIAS / RÓTULO COMERCIAL HELPERS ---
+    function getDealerAlias(id) {
+      return localStorage.getItem(ALIAS_KEY_PREFIX + id) || '';
+    }
+
+    window.toggleAliasEditor = function() {
+      if (!activeDealer) return;
+      const box = document.getElementById('aliasEditorBox');
+      const input = document.getElementById('aliasInput');
+      if (!box || !input) return;
+
+      const isHidden = box.classList.contains('hidden');
+      if (isHidden) {
+        input.value = getDealerAlias(activeDealer.id);
+        box.classList.remove('hidden');
+        input.focus();
+      } else {
+        box.classList.add('hidden');
+      }
+    };
+
+    window.saveDealerAlias = function() {
+      if (!activeDealer) return;
+      const input = document.getElementById('aliasInput');
+      const val = input ? input.value.trim() : '';
+      const key = ALIAS_KEY_PREFIX + activeDealer.id;
+
+      if (!val) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, val);
+      }
+
+      document.getElementById('aliasEditorBox').classList.add('hidden');
+      renderAliasUI(activeDealer.id);
+      renderRecents();
+      window.showToast(val ? "Rótulo / dirección guardado ✓" : "Rótulo eliminado");
+    };
+
+    function renderAliasUI(id) {
+      const alias = getDealerAlias(id);
+      const badge = document.getElementById('dAliasBadge');
+      const text = document.getElementById('dAliasText');
+      const btn = document.getElementById('editAliasBtn');
+
+      if (alias) {
+        text.textContent = alias;
+        badge.classList.remove('hidden');
+        btn.textContent = "✏️ Editar";
+      } else {
+        badge.classList.add('hidden');
+        btn.textContent = "+ Añadir nombre comercial / calle";
+      }
+    }
+
+    // --- FORMATEADOR FECHA FIRMA (Columna G de Excel) ---
+    function parseExcelDateSerial(val) {
+      if (!val) return { label: "", isNew: false };
+      const num = parseInt(String(val).trim(), 10);
+      if (!isNaN(num) && num >= 30000 && num <= 65000) {
+        const utcDays = num - 25569;
+        const dateObj = new Date(utcDays * 86400 * 1000);
+        const m = MONTHS_ES[dateObj.getUTCMonth()] || "";
+        const y = dateObj.getUTCFullYear();
+        const nowSerial = Math.floor(Date.now() / 86400000) + 25569;
+        // "Alta reciente" = firmado en los últimos 95 días (se tolera hasta 1 mes en el futuro
+        // por desfases de zona horaria o fechas precargadas). Sin números mágicos que caduquen.
+        const daysAgo = nowSerial - num;
+        const isNew = daysAgo >= -31 && daysAgo <= 95;
+        return { label: `${m} ${y}`, isNew: isNew };
+      }
+      return { label: String(val).trim(), isNew: false };
+    }
+
+    // --- FILE UPLOAD (SHEETJS) ---
+    window.triggerUpload = function() {
+      document.getElementById('excelFileInput').click();
+    };
+
+    window.handleFileUpload = async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (typeof XLSX === 'undefined') {
+        window.showToast("❌ Falta el lector de Excel. Conéctate una vez a internet y vuelve a intentarlo.");
+        e.target.value = '';
+        return;
+      }
+
+      window.showToast("Leyendo archivo Excel...");
+
+      try {
+        const buffer = await file.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const matrix = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
+
+        if (!matrix || matrix.length < 2) {
+          throw new Error("La hoja de cálculo está vacía");
+        }
+
+        const result = parseExcelMatrix(matrix);
+        const parsedMap = result.dealers;
+        const count = Object.keys(parsedMap).length;
+
+        if (count === 0) {
+          throw new Error("No se encontraron registros de distribuidores válidos.");
+        }
+
+        const now = new Date();
+        const dateStr = `${now.getDate()}/${now.getMonth() + 1} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+        // Salvaguarda: si en este dispositivo ya hay la cartera de otro comercial, avisar
+        let prevMeta = {};
+        try { prevMeta = JSON.parse(localStorage.getItem(STORAGE_KEY_META) || '{}') || {}; } catch(e) {}
+        const prevCom = String(prevMeta.comercial || '').trim();
+        const newCom = String(result.comercial || '').trim();
+        if (prevCom && newCom && prevCom.toLowerCase() !== newCom.toLowerCase()) {
+          const cambiar = window.confirm(
+            `En este dispositivo hay cargada la cartera de ${prevCom}.\n\n` +
+            `El Excel que has elegido es de ${newCom} y la sustituirá.\n\n¿Continuar?`
+          );
+          if (!cambiar) { e.target.value = ''; return; }
+        }
+
+        const meta = {
+          lastUpdated: dateStr,
+          fileName: file.name,
+          count: count,
+          comercial: result.comercial,
+          coordinador: result.coordinador,
+          comerciales: result.comerciales
+        };
+
+        // Guardamos primero en disco: si falla la cuota, no dejamos la app a medias
+        localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(parsedMap));
+        localStorage.setItem(STORAGE_KEY_META, JSON.stringify(meta));
+
+        CURRENT_DEALERS_MAP = parsedMap;
+        updateStatusUI(count, dateStr, file.name, meta);
+        applyStateUI(true);
+
+        // Si la ficha abierta ya no existe en el nuevo Excel, volvemos al buscador
+        if (activeDealer && !CURRENT_DEALERS_MAP[activeDealer.id]) {
+          window.resetSearch();
+        } else if (activeDealer) {
+          renderDealerCard(CURRENT_DEALERS_MAP[activeDealer.id]);
+        }
+
+        window.showToast(`✅ ${count} distribuidores cargados`);
+
+        if (result.comerciales.length > 1) {
+          setTimeout(() => {
+            window.showToast(`⚠️ Este Excel incluye ${result.comerciales.length} comerciales. Se han cargado todos.`);
+          }, 2600);
+        }
+
+        e.target.value = '';
+      } catch (err) {
+        console.error(err);
+        const quota = err && (err.name === 'QuotaExceededError' || /quota/i.test(err.message || ''));
+        window.showToast(quota
+          ? "❌ El Excel es demasiado grande para el móvil. Divídelo por comercial."
+          : `❌ Error: ${err.message || 'No se pudo leer el Excel'}`);
+        e.target.value = '';
+      }
+    };
+
+    // PARSER POR ÍNDICE DE COLUMNA REAL (Columna O = índice 14 = Fibra Actual, Columna G = índice 6 = Fecha firma)
+    function parseExcelMatrix(matrix) {
+      const out = {};
+      const comercialesSet = new Set();
+      let coordinador = '';
+      const rawHeaders = matrix[0].map(h => String(h || '').trim());
+      const cleanHeaders = rawHeaders.map(h =>
+        h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      );
+
+      const getColIdx = (exactNames, fallbackIdx, forbiddenSubstrings = []) => {
+        const exactIdx = cleanHeaders.findIndex(ch => exactNames.includes(ch));
+        if (exactIdx !== -1) return exactIdx;
+
+        if (fallbackIdx !== undefined && fallbackIdx < cleanHeaders.length) {
+          const candidate = cleanHeaders[fallbackIdx];
+          const isForbidden = forbiddenSubstrings.some(sub => candidate.includes(sub));
+          if (!isForbidden) return fallbackIdx;
+        }
+
+        return cleanHeaders.findIndex(ch =>
+          exactNames.some(n => ch.includes(n)) &&
+          !forbiddenSubstrings.some(sub => ch.includes(sub))
+        );
+      };
+
+      const idxId       = getColIdx(['id', 'id distribuidor'], 2);
+      const idxCoordinador = getColIdx(['coordinador'], 0);
+      const idxComercial   = getColIdx(['comercial db5', 'comercial'], 1);
+      const idxName     = getColIdx(['nombre distribuidor', 'distribuidor'], 3);
+      const idxCp       = getColIdx(['codigo postal', 'cp'], 4);
+      const idxAccFib   = getColIdx(['acceso a fibra', 'acceso fibra'], 5);
+      const idxFechaF   = getColIdx(['fecha firma', 'alta'], 6);
+      const idxMun      = getColIdx(['municipio'], 8);
+      const idxSubzona  = getColIdx(['nombre subzona', 'subzona'], 10);
+      const idxCatFib   = getColIdx(['categoria fibra 2026', 'categoria fibra'], 11);
+      const idxCatPrep  = getColIdx(['categoria prepago 2026', 'categoria prepago'], 12);
+      const idxHuella   = getColIdx(['tipo huella.1', 'tipo huella', 'huella'], 13);
+
+      // COLUMNA O (índice 14) = Fibra actual del mes corriente
+      const idxFibAct   = getColIdx(['fibra'], 14, ['new', 'acceso', 'categoria', 'proy', 'ly', 'm-']);
+      const idxFibProy  = getColIdx(['proy fibra'], 16);
+      const idxFibLy    = getColIdx(['fibra.ly', 'fibra ly'], 17);
+      const idxFibM3    = getColIdx(['fibra m-3'], 18);
+      const idxFibM2    = getColIdx(['fibra m-2'], 19);
+      const idxFibM1    = getColIdx(['fibra m-1'], 20);
+
+      // COLUMNA V (índice 21) = Móvil contrato actual
+      const idxMovAct   = getColIdx(['movil', 'pospago'], 21, ['new', 'proy', 'ly', 'm-']);
+      const idxMovProy  = getColIdx(['proy pospago', 'proy movil'], 23);
+      const idxMovLy    = getColIdx(['posp.ly', 'posp ly', 'movil ly'], 24);
+      const idxMovM3    = getColIdx(['posp m-3', 'movil m-3'], 25);
+      const idxMovM2    = getColIdx(['posp m-2', 'movil m-2'], 26);
+      const idxMovM1    = getColIdx(['posp m-1', 'movil m-1'], 27);
+
+      // COLUMNA AC (índice 28) = Prepago actual
+      const idxPrepAct  = getColIdx(['prepago'], 28, ['new', 'categoria', 'proy', 'ly', 'm-']);
+      const idxPrepProy = getColIdx(['proy prepago'], 29);
+      const idxPrepLy   = getColIdx(['prep ly', 'prep.ly'], 30);
+      const idxPrepM3   = getColIdx(['prep m-3'], 31);
+      const idxPrepM2   = getColIdx(['prep m-2'], 32);
+      const idxPrepM1   = getColIdx(['prep m-1'], 33);
+
+      // COLUMNA AI (índice 34) = Digi TV actual
+      const idxTvAct    = getColIdx(['digi tv', 'tv'], 34, ['new', 'proy', 'ly', 'm-']);
+      const idxTvProy   = getColIdx(['proy tv'], 36);
+      const idxTvM3     = getColIdx(['digi tv m-3', 'tv m-3'], 37);
+      const idxTvM2     = getColIdx(['digi tv m-2', 'tv m-2'], 38);
+      const idxTvM1     = getColIdx(['digi tv m-1', 'tv m-1'], 39);
+
+      const getInt = (row, idx) => {
+        if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null || row[idx] === '') return 0;
+        const n = parseFloat(String(row[idx]).replace(',', '.'));
+        return isNaN(n) ? 0 : Math.round(n);
+      };
+
+      const getDec = (row, idx) => {
+        if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null || row[idx] === '') return 0.0;
+        const n = parseFloat(String(row[idx]).replace(',', '.'));
+        return isNaN(n) ? 0.0 : Math.round(n * 10) / 10;
+      };
+
+      for (let i = 1; i < matrix.length; i++) {
+        const row = matrix[i];
+        if (!row || row.length === 0) continue;
+
+        const rawId = idxId !== -1 ? String(row[idxId] || '').trim() : '';
+        if (!rawId || isNaN(Number(rawId))) continue;
+
+        // Metadatos del Excel: quién es el comercial dueño de esta cartera
+        const comercialRow = idxComercial !== -1 && row[idxComercial] ? String(row[idxComercial]).trim() : '';
+        if (comercialRow) comercialesSet.add(comercialRow);
+        if (!coordinador && idxCoordinador !== -1 && row[idxCoordinador]) {
+          coordinador = String(row[idxCoordinador]).trim();
+        }
+
+        const rawAcc = idxAccFib !== -1 ? String(row[idxAccFib] || '').toLowerCase().trim() : 'no';
+        const hasFibra = rawAcc.startsWith('y') || rawAcc.startsWith('s') || rawAcc === '1';
+
+        const ffParsed = idxFechaF !== -1 ? parseExcelDateSerial(row[idxFechaF]) : { label: "", isNew: false };
+
+        out[rawId] = {
+          id: rawId,
+          n: idxName !== -1 && row[idxName] ? String(row[idxName]).trim() : `Dealer ${rawId}`,
+          cp: idxCp !== -1 && row[idxCp] ? String(row[idxCp]).trim().padStart(5, '0') : '07000',
+          z: idxSubzona !== -1 && row[idxSubzona] ? String(row[idxSubzona]).trim() : 'Baleares',
+          m: idxMun !== -1 && row[idxMun] ? String(row[idxMun]).trim() : 'Palma de Mallorca',
+          h: idxHuella !== -1 && row[idxHuella] ? String(row[idxHuella]).trim() : 'Zona Smart',
+          f_acc: hasFibra,
+          ff: ffParsed.label,
+          ff_new: ffParsed.isNew,
+          cat_p: idxCatPrep !== -1 && row[idxCatPrep] ? String(row[idxCatPrep]).trim() : 'Beginner',
+          cat_f: idxCatFib !== -1 && row[idxCatFib] ? String(row[idxCatFib]).trim() : 'Beginner',
+          p: {
+            m3: getInt(row, idxPrepM3),
+            m2: getInt(row, idxPrepM2),
+            m1: getInt(row, idxPrepM1),
+            act: getInt(row, idxPrepAct),
+            proy: getDec(row, idxPrepProy),
+            ly: getInt(row, idxPrepLy)
+          },
+          mov: {
+            m3: getInt(row, idxMovM3),
+            m2: getInt(row, idxMovM2),
+            m1: getInt(row, idxMovM1),
+            act: getInt(row, idxMovAct),
+            proy: getDec(row, idxMovProy),
+            ly: getInt(row, idxMovLy)
+          },
+          fib: {
+            m3: getInt(row, idxFibM3),
+            m2: getInt(row, idxFibM2),
+            m1: getInt(row, idxFibM1),
+            act: getInt(row, idxFibAct),
+            proy: getDec(row, idxFibProy),
+            ly: getInt(row, idxFibLy)
+          },
+          tv: {
+            m3: getInt(row, idxTvM3),
+            m2: getInt(row, idxTvM2),
+            m1: getInt(row, idxTvM1),
+            act: getInt(row, idxTvAct),
+            proy: getDec(row, idxTvProy)
+          }
+        };
+      }
+
+      return {
+        dealers: out,
+        comercial: comercialesSet.size === 1 ? Array.from(comercialesSet)[0] : '',
+        coordinador: coordinador,
+        comerciales: Array.from(comercialesSet).sort()
+      };
+    }
+
+    // --- BÚSQUEDA ---
+    // Escapa texto antes de inyectarlo en HTML (nombres, zonas, rótulos vienen del Excel)
+    function escapeHtml(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    function hideSearchError() {
+      const errBox = document.getElementById('searchError');
+      if (errBox) errBox.classList.add('hidden');
+    }
+
+    function showSearchError(msg) {
+      const errBox = document.getElementById('searchError');
+      const errMsg = document.getElementById('searchErrorMsg');
+      if (errMsg) errMsg.textContent = msg;
+      if (errBox) errBox.classList.remove('hidden');
+    }
+
+    window.doSearch = function(e) {
+      if (e) e.preventDefault();
+      const val = document.getElementById('searchInput').value.trim();
+      if (!val) return;
+      window.selectDealer(val);
+    };
+
+    window.handleLiveSearch = function(val) {
+      const clean = String(val || '').trim();
+      const cleanLow = clean.toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      const dropdown = document.getElementById('autocompleteList');
+
+      if (clearBtn) clearBtn.classList.toggle('hidden', clean.length === 0);
+      hideSearchError();
+
+      if (clean.length < 2) {
+        if (dropdown) { dropdown.innerHTML = ''; dropdown.classList.add('hidden'); }
+        return;
+      }
+
+      const keys = Object.keys(CURRENT_DEALERS_MAP);
+      const matches = keys.filter(k => {
+        const d = CURRENT_DEALERS_MAP[k];
+        const alias = getDealerAlias(d.id).toLowerCase();
+        return k.indexOf(clean) !== -1
+          || String(d.n || '').toLowerCase().indexOf(cleanLow) !== -1
+          || String(d.cp || '').indexOf(clean) !== -1
+          || (alias && alias.indexOf(cleanLow) !== -1);
+      }).slice(0, 8);
+
+      if (!dropdown) return;
+
+      if (matches.length === 0) {
+        dropdown.innerHTML = '';
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      dropdown.innerHTML = matches.map(k => {
+        const d = CURRENT_DEALERS_MAP[k];
+        const alias = getDealerAlias(d.id);
+        const aliasHtml = alias
+          ? `<div class="text-[11px] font-bold text-digi-blue mt-0.5">🏪 ${escapeHtml(alias)}</div>`
+          : '';
+        return `
+          <div
+            data-dealer-id="${escapeHtml(d.id)}"
+            class="p-3 hover:bg-slate-50 active:bg-blue-50 cursor-pointer flex items-center justify-between transition text-left"
+          >
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-bold text-xs bg-digi-navy text-digi-yellow px-1.5 py-0.5 rounded">${escapeHtml(d.id)}</span>
+                <span class="text-xs font-bold text-slate-900">${escapeHtml(d.n)}</span>
+              </div>
+              ${aliasHtml}
+              <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(d.cp)} · ${escapeHtml(d.z)} (${escapeHtml(d.m)})</div>
+            </div>
+            <span class="text-xs font-bold text-digi-blue">Ver →</span>
+          </div>`;
+      }).join('');
+      dropdown.classList.remove('hidden');
+    };
+
+    window.clearSearchField = function() {
+      const input = document.getElementById('searchInput');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const clearBtn = document.getElementById('clearSearchBtn');
+      const dropdown = document.getElementById('autocompleteList');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      if (dropdown) dropdown.classList.add('hidden');
+      hideSearchError();
+    };
+
+    // Abre una ficha solo cuando la coincidencia es inequívoca.
+    // Antes, un ID parcial podía abrir el distribuidor equivocado en silencio.
+    window.selectDealer = function(idOrQuery) {
+      if (!idOrQuery) return false;
+
+      const q = String(idOrQuery).trim();
+      const qLow = q.toLowerCase();
+      const dropdown = document.getElementById('autocompleteList');
+      if (dropdown) dropdown.classList.add('hidden');
+      hideSearchError();
+
+      const keys = Object.keys(CURRENT_DEALERS_MAP);
+      if (keys.length === 0) {
+        applyStateUI(false);
+        return false;
+      }
+
+      // 1) ID exacto
+      if (CURRENT_DEALERS_MAP[q]) {
+        renderDealerCard(CURRENT_DEALERS_MAP[q]);
+        return true;
+      }
+
+      // 2) Nombre, rótulo o código postal
+      const textMatches = keys.filter(k => {
+        const d = CURRENT_DEALERS_MAP[k];
+        const alias = getDealerAlias(d.id).toLowerCase();
+        return String(d.n || '').toLowerCase().indexOf(qLow) !== -1
+          || String(d.cp || '').indexOf(q) !== -1
+          || (alias && alias.indexOf(qLow) !== -1);
+      });
+
+      // 3) ID parcial (solo si es único)
+      const idMatches = keys.filter(k => k.indexOf(q) !== -1);
+      const candidates = textMatches.length > 0 ? textMatches : idMatches;
+
+      if (candidates.length === 1) {
+        renderDealerCard(CURRENT_DEALERS_MAP[candidates[0]]);
+        return true;
+      }
+
+      if (candidates.length > 1) {
+        window.handleLiveSearch(q);
+        showSearchError(`Hay ${candidates.length} distribuidores que coinciden con "${q}". Toca el correcto en la lista.`);
+        return false;
+      }
+
+      showSearchError(`No se encontró el ID o tienda "${q}" en tu cartera. Revisa el código del CRM o actualiza el archivo Excel.`);
+      return false;
+    };
+
+    // --- RENDER DEDICATED DEALER CARD ---
+    function renderDealerCard(d) {
+      activeDealer = d;
+      saveToRecents(d);
+
+      const setTxt = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val !== undefined && val !== null ? val : '0';
+      };
+
+      // Header info
+      setTxt('dIdBadge', `ID: ${d.id}`);
+      setTxt('dName', d.n);
+      setTxt('dLocation', `${d.cp} · ${d.z} (${d.m})`);
+
+      // Alias UI
+      const aliasBox = document.getElementById('aliasEditorBox');
+      if (aliasBox) aliasBox.classList.add('hidden');
+      renderAliasUI(d.id);
+
+      // Badges
+      const hBadge = document.getElementById('dHuellaBadge');
+      if (hBadge) {
+        hBadge.textContent = d.h;
+        hBadge.className = d.h === 'Zona Smart'
+          ? "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-blue-100 text-blue-900 border border-blue-200"
+          : "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-slate-100 text-slate-700 border border-slate-300";
+      }
+
+      const fBadge = document.getElementById('dFibraBadge');
+      if (fBadge) {
+        if (d.f_acc) {
+          fBadge.textContent = "⚡ Fibra Habilitada";
+          fBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-emerald-100 text-emerald-900 border border-emerald-300";
+        } else {
+          fBadge.textContent = "Sin Acceso Fibra";
+          fBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-slate-100 text-slate-500 border border-slate-200";
+        }
+      }
+
+      setTxt('dCatPrepagoBadge', `Pre: ${d.cat_p || 'Beginner'}`);
+
+      // Antigüedad Badge (Fecha Firma)
+      const antBadge = document.getElementById('dAntiguedadBadge');
+      if (antBadge) {
+        if (d.ff) {
+          if (d.ff_new) {
+            antBadge.textContent = `🆕 Alta: ${d.ff}`;
+            antBadge.className = "text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wide bg-purple-100 text-purple-900 border border-purple-300";
+          } else {
+            antBadge.textContent = `📅 Alta: ${d.ff}`;
+            antBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide bg-slate-100 text-slate-700 border border-slate-200";
+          }
+          antBadge.classList.remove('hidden');
+        } else {
+          antBadge.classList.add('hidden');
+        }
+      }
+
+      // Render Tactical Focus Box
+      renderTacticalFocus(d);
+
+      // 1. Prepago Metrics
+      setTxt('pre_m3', d.p.m3);
+      setTxt('pre_m2', d.p.m2);
+      setTxt('pre_m1', d.p.m1);
+      setTxt('pre_act', d.p.act);
+      setTxt('pre_proy', d.p.proy);
+      setTxt('pre_ly', d.p.ly);
+      updateTrendBadge('trendPrepagoBadge', d.p.act, d.p.m1, d.p.proy, false);
+      updateLyComparison('lyPrepagoBadge', 'pre_ly_box', d.p.proy, d.p.ly);
+
+      // 2. Fibra Metrics (Simplificar si no tiene acceso ni histórico)
+      const hasAnyFibraHistory = (d.fib.m3 + d.fib.m2 + d.fib.m1 + d.fib.act + d.fib.ly) > 0;
+      const fibGrid = document.getElementById('fibraGrid');
+      const fibCompact = document.getElementById('fibraCompactBar');
+
+      if (!d.f_acc && !hasAnyFibraHistory) {
+        if (fibGrid) fibGrid.classList.add('hidden');
+        if (fibCompact) fibCompact.classList.remove('hidden');
+        updateTrendBadge('trendFibraBadge', 0, 0, 0, true);
+        const lyFibra = document.getElementById('lyFibraBadge');
+        if (lyFibra) lyFibra.classList.add('hidden');
+      } else {
+        if (fibGrid) fibGrid.classList.remove('hidden');
+        if (fibCompact) fibCompact.classList.add('hidden');
+        setTxt('fib_m3', d.fib.m3);
+        setTxt('fib_m2', d.fib.m2);
+        setTxt('fib_m1', d.fib.m1);
+        setTxt('fib_act', d.fib.act);
+        setTxt('fib_proy', d.fib.proy);
+        setTxt('fib_ly', d.fib.ly);
+        updateTrendBadge('trendFibraBadge', d.fib.act, d.fib.m1, d.fib.proy, !d.f_acc);
+        updateLyComparison('lyFibraBadge', 'fib_ly_box', d.fib.proy, d.fib.ly);
+      }
+
+      // 3. Móvil Metrics
+      setTxt('mov_m3', d.mov.m3);
+      setTxt('mov_m2', d.mov.m2);
+      setTxt('mov_m1', d.mov.m1);
+      setTxt('mov_act', d.mov.act);
+      setTxt('mov_proy', d.mov.proy);
+      setTxt('mov_ly', d.mov.ly);
+      updateTrendBadge('trendMovilBadge', d.mov.act, d.mov.m1, d.mov.proy, false);
+      updateLyComparison('lyMovilBadge', 'mov_ly_box', d.mov.proy, d.mov.ly);
+
+      // 4. DIGI TV (Ocultar cuando no aplica para evitar ruido visual)
+      const hasAnyTv = (d.tv.m3 + d.tv.m2 + d.tv.m1 + d.tv.act) > 0;
+      const tvCard = document.getElementById('cardDigiTv');
+      if (tvCard) {
+        if (!d.f_acc && !hasAnyTv) {
+          tvCard.classList.add('hidden');
+        } else {
+          tvCard.classList.remove('hidden');
+          setTxt('tv_m3', d.tv.m3);
+          setTxt('tv_m2', d.tv.m2);
+          setTxt('tv_m1', d.tv.m1);
+          setTxt('tv_act', d.tv.act);
+          setTxt('tv_proy', d.tv.proy);
+        }
+      }
+
+      // Load Visit Notes
+      loadDealerNote(d.id);
+
+      // Toggle views
+      document.getElementById('homeView').classList.add('hidden');
+      document.getElementById('dealerView').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    // Indicador de tendencia con detección "¡Arranca!" (M-1=0 -> ACT>0)
+    function updateTrendBadge(elementId, act, m1, proy, isNoAccess = false) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+
+      if (isNoAccess) {
+        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500';
+        el.textContent = 'Sin Cobertura';
+        return;
+      }
+
+      if (act === 0 && m1 === 0) {
+        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600';
+        el.textContent = 'Sin ventas';
+      } else if (m1 === 0 && act > 0) {
+        el.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-300';
+        el.textContent = `✨ ¡Arranca! (+${act})`;
+      } else if (proy >= m1) {
+        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+        el.textContent = `▲ Sube (+${(proy - m1).toFixed(1)})`;
+      } else {
+        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800';
+        el.textContent = `▼ Cae (${(proy - m1).toFixed(1)})`;
+      }
+    }
+
+    // Semáforo comparativo contra el Año Anterior (vs LY)
+    function updateLyComparison(badgeId, boxId, proy, ly) {
+      const badge = document.getElementById(badgeId);
+      const box = document.getElementById(boxId);
+      if (!badge || !box) return;
+
+      if (ly === 0 && proy === 0) {
+        badge.classList.add('hidden');
+        box.className = "rounded py-0.5";
+        return;
+      }
+
+      const diff = Math.round(proy - ly);
+      if (ly >= 2 && proy < ly * 0.65) {
+        badge.textContent = `vs LY: ${diff}`;
+        badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-200";
+        badge.classList.remove('hidden');
+        box.className = "bg-rose-50/80 rounded py-0.5 border border-rose-200";
+      } else if (ly > 0 && proy >= ly * 1.15) {
+        badge.textContent = `vs LY: +${diff}`;
+        badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200";
+        badge.classList.remove('hidden');
+        box.className = "bg-emerald-50/70 rounded py-0.5";
+      } else {
+        badge.classList.add('hidden');
+        box.className = "rounded py-0.5";
+      }
+    }
+
+    // --- TACTICAL RECOMMENDATION ENGINE (Con detección de Nuevo + Potencial LY) ---
+    function renderTacticalFocus(d) {
+      const box = document.getElementById('dTacticalAlert');
+      const title = document.getElementById('dTacticalTitle');
+      const list = document.getElementById('dTacticalList');
+      if (!box || !title || !list) return;
+
+      const hasFibraGap = (d.f_acc === true && d.fib.act === 0);
+      const isZeroAll = (d.p.act === 0 && d.mov.act === 0 && d.fib.act === 0 && d.tv.act === 0);
+
+      // La decisión y el porcentaje se calculan sobre las MISMAS cifras (act vs M-1),
+      // para que el titular no contradiga el criterio.
+      const prepagoDropPct = d.p.m1 >= 6 ? Math.round((1 - (d.p.act / d.p.m1)) * 100) : 0;
+      const prepagoDrop = (d.p.m1 >= 6 && prepagoDropPct >= 40);
+      const highPrepago = (d.p.act >= 18);
+
+      let themeClass = "p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950";
+      let headerText = "🎯 FOCO TÁCTICO PRE-VISITA";
+      let items = [];
+
+      if (d.ff_new && isZeroAll) {
+        themeClass = "p-4 rounded-2xl border bg-purple-50 border-purple-300 text-purple-950 shadow-xs";
+        headerText = `🆕 ALTA RECIENTE (${d.ff}) · ONBOARDING`;
+        items = [
+          `Distribuidor de reciente incorporación aún sin activaciones registradas.`,
+          `<strong>Formación rápida:</strong> Verificar que domina Dealercare y tiene stock inicial de SIMs.`,
+          `<strong>Visibilidad exterior:</strong> Asegurar colocación de banderola/vinilo para atraer primeros clientes.`
+        ];
+      } else if (hasFibraGap) {
+        themeClass = "p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 shadow-xs";
+        headerText = "🚨 ALERTA FIBRA: HABILITADO CON 0 VENTAS";
+        items = [
+          `Punto con <strong>Fibra habilitada en ${escapeHtml(d.h)}</strong> pero lleva <strong>0 activaciones</strong> este mes (en M-1 hizo ${d.fib.m1}).`,
+          `<strong>Auditar PLV:</strong> Revisar cartelería, revistas y vinilos visibles.`,
+          `<strong>Hablar con el Dealer:</strong> Indagar motivos y sugerir tips para ofrecer fibra a sus clientes.`
+        ];
+      } else if (prepagoDrop) {
+        themeClass = "p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs";
+        headerText = `⚠️ CAÍDA FUERTE EN PREPAGO (-${prepagoDropPct}%)`;
+        items = [
+          `Lleva <strong>${d.p.act} SIMs</strong> activadas frente a las <strong>${d.p.m1}</strong> del mes anterior.`,
+          `<strong>Stock físico:</strong> Preguntar por existencias de SIMs.`,
+          `<strong>Presencia de competencia:</strong> Comprobar si otros operadores han dejado cartelería agresiva o mejores incentivos de recarga.`
+        ];
+      } else if (isZeroAll) {
+        themeClass = "p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 shadow-xs";
+        headerText = "⭕ DISTRIBUIDOR INACTIVO (0 ACTIVACIONES)";
+        items = [
+          `Cero activaciones en todos los productos en lo que va de mes.`,
+          `<strong>Verificar acceso a Dealercare:</strong> Ver si hay embargos o algún problema personal.`,
+          `Hablar con el Dealer para proponer un objetivo mensual.`
+        ];
+      } else if (highPrepago) {
+        themeClass = "p-4 rounded-2xl border bg-emerald-50 border-emerald-300 text-emerald-950 shadow-xs";
+        headerText = "🔥 PUNTO MOTOR: ALTO VOLUMEN PREPAGO";
+        items = [
+          `Excelente ritmo con <strong>${d.p.act} SIMs</strong> este mes (Proy: ${d.p.proy}).`,
+          `Asegurar que dispone de suficiente stock para no quebrar inventario a final de mes.`
+        ];
+      } else {
+        themeClass = "p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800 shadow-xs";
+        headerText = "✅ SEGUIMIENTO DE RUTA";
+        items = [
+          `Ritmo estable con ${d.p.act} prepagos, ${d.mov.act} contratos, ${d.fib.act} fibras y ${d.tv.act} TV este mes.`,
+          `Reponer tarjetas SIM y revisar colocación de vinilos y cartelería en mostrador.`
+        ];
+      }
+
+      // Aviso adicional si el punto tuvo alto rendimiento el Año Anterior (vs LY) y hoy ha caído
+      const lyAlerts = [];
+      if (d.fib.ly >= 2 && d.fib.act === 0) {
+        lyAlerts.push(`${d.fib.ly} fibras`);
+      }
+      if (d.mov.ly >= 4 && d.mov.act <= 1) {
+        lyAlerts.push(`${d.mov.ly} contratos`);
+      }
+      if (d.p.ly >= 15 && d.p.proy <= d.p.ly * 0.55) {
+        lyAlerts.push(`${d.p.ly} prepagos`);
+      }
+      if (lyAlerts.length > 0) {
+        items.push(`<strong>📊 Potencial Histórico (LY):</strong> El año pasado en este mismo mes hizo <strong>${lyAlerts.join(' y ')}</strong>. Tiene clientela y capacidad demostrada.`);
+      }
+
+      box.className = themeClass;
+      title.textContent = headerText;
+      list.innerHTML = items.map(it => `<li>${it}</li>`).join('');
+    }
+
+    // --- RECENT SEARCHES MANAGER ---
+    function saveToRecents(d) {
+      let recents = getRecents();
+      recents = recents.filter(r => r.id !== d.id);
+      recents.unshift({ id: d.id, n: d.n, cp: d.cp, z: d.z });
+      recents = recents.slice(0, 4);
+      localStorage.setItem(STORAGE_KEY_RECENTS, JSON.stringify(recents));
+      renderRecents();
+    }
+
+    function getRecents() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY_RECENTS);
+        return stored ? JSON.parse(stored) : [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function renderRecents() {
+      const recents = getRecents();
+      const list = document.getElementById('recentsList');
+      const sec = document.getElementById('recentsSection');
+      if (!list || !sec) return;
+
+      if (recents.length === 0) {
+        sec.classList.add('hidden');
+        return;
+      }
+
+      sec.classList.remove('hidden');
+      list.innerHTML = recents.map(r => {
+        const alias = getDealerAlias(r.id);
+        const aliasHtml = alias ? ` · <span class="text-digi-blue">${escapeHtml(alias)}</span>` : '';
+        return `
+          <div
+            data-dealer-id="${escapeHtml(r.id)}"
+            class="bg-white hover:bg-slate-50 active:bg-blue-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between cursor-pointer transition shadow-2xs"
+          >
+            <div class="flex items-center gap-2 truncate pr-2">
+              <span class="font-mono font-bold text-xs bg-digi-navy text-digi-yellow px-2 py-0.5 rounded">${escapeHtml(r.id)}</span>
+              <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(r.n)}${aliasHtml}</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium shrink-0">${escapeHtml(r.cp)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.clearRecents = function() {
+      localStorage.removeItem(STORAGE_KEY_RECENTS);
+      renderRecents();
+      window.showToast("Historial borrado");
+    };
+
+    // --- NOTES MANAGEMENT & 1-TOUCH CHIPS ---
+    window.appendQuickNote = function(snippet) {
+      if (!activeDealer) return;
+      const noteField = document.getElementById('visitNotes');
+      if (!noteField) return;
+
+      const current = noteField.value.trim();
+      if (current.includes(snippet)) return;
+      noteField.value = current ? `${current} ${snippet}` : snippet;
+      saveNote();
+    };
+
+    window.handleNoteInput = function() {
+      clearTimeout(noteDebounceTimer);
+      noteDebounceTimer = setTimeout(saveNote, 400);
+    };
+
+    // Fuerza el guardado de una nota pendiente (debounce de 400 ms)
+    function flushPendingNote() {
+      if (noteDebounceTimer) {
+        clearTimeout(noteDebounceTimer);
+        noteDebounceTimer = null;
+      }
+      if (activeDealer) saveNote();
+    }
+
+    // Guardado de seguridad al salir o al pasar la app a segundo plano
+    window.addEventListener('pagehide', flushPendingNote);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flushPendingNote();
+    });
+
+    function saveNote() {
+      if (!activeDealer) return;
+      const text = document.getElementById('visitNotes').value.trim();
+      const key = NOTES_KEY_PREFIX + activeDealer.id;
+      const alertBadge = document.getElementById('notesSavedAlert');
+
+      if (!text) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, text);
+        if (alertBadge) {
+          alertBadge.classList.remove('hidden');
+          setTimeout(() => alertBadge.classList.add('hidden'), 2000);
+        }
+      }
+    }
+
+    function loadDealerNote(dealerId) {
+      const noteField = document.getElementById('visitNotes');
+      if (!noteField) return;
+      const saved = localStorage.getItem(NOTES_KEY_PREFIX + dealerId);
+      noteField.value = saved || '';
+    }
+
+    // --- COPIA DE SEGURIDAD: EXPORTAR / IMPORTAR / BORRAR TODO ---
+    const BACKUP_VERSION = 1;
+    const pad2 = n => String(n).padStart(2, '0');
+
+    function readAllPrefixed(prefix) {
+      const out = {};
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.indexOf(prefix) === 0) {
+            const v = localStorage.getItem(k);
+            if (v) out[k.slice(prefix.length)] = v;
+          }
+        }
+      } catch(e) {}
+      return out;
+    }
+
+    function clearAllPrefixed(prefix) {
+      try {
+        const keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.indexOf(prefix) === 0) keys.push(k);
+        }
+        keys.forEach(k => localStorage.removeItem(k));
+      } catch(e) {}
+    }
+
+    window.openSettings = function() {
+      const m = document.getElementById('settingsModal');
+      if (m) m.classList.remove('hidden');
+    };
+
+    window.closeSettings = function() {
+      const m = document.getElementById('settingsModal');
+      if (m) m.classList.add('hidden');
+    };
+
+    window.exportBackup = function() {
+      try {
+        flushPendingNote();
+        let meta = {};
+        try { meta = JSON.parse(localStorage.getItem(STORAGE_KEY_META) || '{}') || {}; } catch(e) {}
+        const payload = {
+          app: 'DigiGPV Visor Táctico',
+          backupVersion: BACKUP_VERSION,
+          exportedAt: new Date().toISOString(),
+          db: CURRENT_DEALERS_MAP || {},
+          meta: meta,
+          notes: readAllPrefixed(NOTES_KEY_PREFIX),
+          aliases: readAllPrefixed(ALIAS_KEY_PREFIX),
+          recents: getRecents()
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const d = new Date();
+        const stamp = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `digigpv_backup_${stamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        window.closeSettings();
+        window.showToast('💾 Copia de seguridad descargada');
+      } catch (err) {
+        console.error(err);
+        window.showToast('❌ No se pudo crear la copia');
+      }
+    };
+
+    window.triggerImportBackup = function() {
+      const input = document.getElementById('backupFileInput');
+      if (input) input.click();
+    };
+
+    window.handleImportBackup = async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      flushPendingNote();
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!data || typeof data !== 'object') throw new Error('Archivo no válido');
+
+        const db = data.db && typeof data.db === 'object' ? data.db : {};
+        const notes = data.notes && typeof data.notes === 'object' ? data.notes : {};
+        const aliases = data.aliases && typeof data.aliases === 'object' ? data.aliases : {};
+        const nDb = Object.keys(db).length;
+        const nNotes = Object.keys(notes).length;
+        const nAlias = Object.keys(aliases).length;
+
+        if (nDb === 0 && nNotes === 0 && nAlias === 0) {
+          throw new Error('La copia no contiene datos');
+        }
+
+        const resumen = [
+          nDb ? `${nDb} distribuidores` : null,
+          nNotes ? `${nNotes} notas` : null,
+          nAlias ? `${nAlias} rótulos` : null
+        ].filter(Boolean).join(', ');
+
+        const ok = window.confirm(
+          `Restaurar copia de seguridad:\n\n${resumen}\n\nSe sustituirán los datos actuales de este dispositivo. ¿Continuar?`
+        );
+        if (!ok) { e.target.value = ''; return; }
+
+        if (nDb > 0) {
+          localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(db));
+          localStorage.setItem(STORAGE_KEY_META, JSON.stringify(data.meta || {}));
+        }
+        if (data.notes !== undefined) {
+          clearAllPrefixed(NOTES_KEY_PREFIX);
+          Object.keys(notes).forEach(id => {
+            if (notes[id]) localStorage.setItem(NOTES_KEY_PREFIX + id, String(notes[id]));
+          });
+        }
+        if (data.aliases !== undefined) {
+          clearAllPrefixed(ALIAS_KEY_PREFIX);
+          Object.keys(aliases).forEach(id => {
+            if (aliases[id]) localStorage.setItem(ALIAS_KEY_PREFIX + id, String(aliases[id]));
+          });
+        }
+        if (Array.isArray(data.recents)) {
+          localStorage.setItem(STORAGE_KEY_RECENTS, JSON.stringify(data.recents));
+        }
+
+        activeDealer = null;
+        document.getElementById('dealerView').classList.add('hidden');
+        document.getElementById('homeView').classList.remove('hidden');
+        loadDatabase();
+        renderRecents();
+        window.closeSettings();
+        window.showToast('✅ Copia restaurada');
+        e.target.value = '';
+      } catch (err) {
+        console.error(err);
+        window.showToast(`❌ ${err.message || 'No se pudo leer la copia'}`);
+        e.target.value = '';
+      }
+    };
+
+    window.wipeAllData = function() {
+      const ok = window.confirm(
+        '¿Borrar TODOS los datos de este dispositivo?\n\n' +
+        'Se eliminarán la cartera cargada, las notas de visita, los rótulos y el historial.\n\n' +
+        'No se puede deshacer. Exporta antes una copia de seguridad si quieres conservarlos.'
+      );
+      if (!ok) return;
+
+      try {
+        clearAllPrefixed(NOTES_KEY_PREFIX);
+        clearAllPrefixed(ALIAS_KEY_PREFIX);
+        localStorage.removeItem(STORAGE_KEY_DB);
+        localStorage.removeItem(STORAGE_KEY_META);
+        localStorage.removeItem(STORAGE_KEY_RECENTS);
+
+        CURRENT_DEALERS_MAP = {};
+        activeDealer = null;
+        document.getElementById('dealerView').classList.add('hidden');
+        document.getElementById('homeView').classList.remove('hidden');
+        window.clearSearchField();
+        updateStatusUI(0, '', '', {});
+        applyStateUI(false);
+        renderRecents();
+        window.closeSettings();
+        window.showToast('🧹 Datos borrados');
+      } catch (err) {
+        console.error(err);
+        window.showToast('❌ No se pudieron borrar los datos');
+      }
+    };
+
+    // --- WHATSAPP SHARE ---
+    window.copyWhatsAppReport = function() {
+      if (!activeDealer) return;
+      const d = activeDealer;
+      const alias = getDealerAlias(d.id);
+      const aliasLine = alias ? `🏷️ Rótulo: *${alias}*
+` : '';
+      const savedNote = localStorage.getItem(NOTES_KEY_PREFIX + d.id) || "Sin observaciones adicionales.";
+
+      const report = 
+`📍 *VISITA GPV DIGI*
+🏪 *${d.n}* (ID: ${d.id})
+${aliasLine}📌 ${d.cp} · ${d.z} (${d.m})
+📶 Huella: ${d.h} | Fibra: ${d.f_acc ? 'Habilitada' : 'No'}${d.ff ? ' | Alta: ' + d.ff : ''}
+
+📊 *BALANCE COMERCIAL :*
+• Prepago: Act *${d.p.act}* (Proy: ${d.p.proy} | M-1: ${d.p.m1} | LY: ${d.p.ly})
+• Contrato: Act *${d.mov.act}* (Proy: ${d.mov.proy} | M-1: ${d.mov.m1} | LY: ${d.mov.ly})
+• Fibra: Act *${d.fib.act}* (Proy: ${d.fib.proy} | M-1: ${d.fib.m1} | LY: ${d.fib.ly})
+• TV: Act *${d.tv.act}*
+
+📝 *Nota de visita:*
+"${savedNote}"`;
+
+      const tempArea = document.createElement("textarea");
+      tempArea.value = report;
+      tempArea.style.position = "fixed";
+      tempArea.style.opacity = "0";
+      document.body.appendChild(tempArea);
+      tempArea.focus();
+      tempArea.select();
+
+      try {
+        document.execCommand('copy');
+        window.showToast("¡Reporte copiado para WhatsApp! ✓");
+      } catch(err) {
+        window.showToast("Copia manualmente el texto");
+      }
+      document.body.removeChild(tempArea);
+    };
+
+    // --- NAVIGATION HELPERS ---
+    window.resetSearch = function() {
+      if (activeDealer) saveNote();
+      document.getElementById('dealerView').classList.add('hidden');
+      document.getElementById('homeView').classList.remove('hidden');
+      window.clearSearchField();
+      window.scrollTo(0, 0);
+    };
+
+    window.showToast = function(msg) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toastMsg');
+      if (!toast || !text) return;
+
+      text.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-10');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-10');
+      }, 2400);
+    };
+
+    // --- PWA: REGISTRO DEL SERVICE WORKER E INSTALACIÓN ---
+    let deferredInstallPrompt = null;
+    const SW_SUPPORTED = ('serviceWorker' in navigator) && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+
+    function updateInstallButton() {
+      const btn = document.getElementById('installAppBtn');
+      if (!btn) return;
+      if (deferredInstallPrompt) {
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      updateInstallButton();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      updateInstallButton();
+      window.showToast('📲 App instalada en la pantalla de inicio');
+    });
+
+    window.installApp = async function() {
+      if (!deferredInstallPrompt) {
+        window.showToast('ℹ️ Usa el menú del navegador → "Añadir a pantalla de inicio"');
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      try {
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          window.showToast('📲 Instalando la app...');
+        }
+      } catch (err) {}
+      deferredInstallPrompt = null;
+      updateInstallButton();
+    };
+
+    if (SW_SUPPORTED) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then((reg) => {
+            // Si hay una versión nueva esperando, avisamos y la activamos.
+            if (reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            reg.addEventListener('updatefound', () => {
+              const sw = reg.installing;
+              if (!sw) return;
+              sw.addEventListener('statechange', () => {
+                if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                  window.showToast('🔄 Nueva versión disponible. Reabre la app para aplicarla.');
+                }
+              });
+            });
+          })
+          .catch((err) => {
+            console.warn('Service Worker no registrado:', err);
+          });
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (window.__swReloading) return;
+          window.__swReloading = true;
+          // No recargamos a la fuerza para no interrumpir una visita en curso.
+        });
+      });
+    }
+  </script>
+</body>
+</html>
