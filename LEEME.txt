@@ -1,5 +1,5 @@
 ============================================================
-  Cartera GPV · Visor Tactico  (v4.4.0)
+  Cartera GPV · Visor Tactico  (v4.4.1)
 ============================================================
 
 Que es
@@ -46,6 +46,13 @@ Primer uso
   3. Cuando termine, el buscador se activa con tu cartera.
   4. Puedes reemplazar el Excel cuando quieras desde el boton
      "Cambiar Excel" o desde Ajustes (rueda dentada).
+
+
+Busqueda
+--------
+El buscador admite ID, nombre, codigo postal o rotulo.
+El teclado del movil abre completo, asi que puedes escribir
+letras y numeros sin cambiar ningun modo.
 
 
 Tus datos

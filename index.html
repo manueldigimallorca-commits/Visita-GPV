@@ -383,21 +383,9 @@
           <div class="w-2 h-2 rounded-full bg-brand-yellow"></div>
           <h2 class="text-base font-bold text-brand-navy tracking-tight">Buscar Distribuidor</h2>
         </div>
-
-        <!-- Conmutador rápido de Teclado 123 / ABC -->
-        <button 
-          type="button" 
-          id="kbModeBtn" 
-          onclick="window.toggleKeyboardMode()" 
-          class="text-[10px] font-black px-2 py-1 rounded-lg border border-slate-300 bg-slate-100 text-brand-navy hover:bg-slate-200 active:scale-95 transition flex items-center gap-1"
-          title="Alternar teclado numérico (ID/CP) o letras (Nombre/Calle)"
-        >
-          <span>⌨️</span>
-          <span id="kbModeLabel">Modo: 123 (ID)</span>
-        </button>
       </div>
       <p class="text-xs text-slate-500 mb-4">
-        Escribe el ID, nombre o rótulo guardado y toca el resultado:
+        Escribe el ID, nombre, código postal o rótulo y toca el resultado:
       </p>
 
       <form onsubmit="window.doSearch(event)" class="space-y-3 relative">
@@ -410,9 +398,8 @@
 
           <input 
             type="search" 
-            inputmode="numeric" 
             id="searchInput" 
-            placeholder="Introduce ID (ej: 13481810)" 
+            placeholder="ID, nombre o calle…" 
             autocomplete="off"
             autocorrect="off"
             spellcheck="false"
@@ -928,7 +915,6 @@
     let CURRENT_DEALERS_MAP = {};
     let activeDealer = null;
     let noteDebounceTimer = null;
-    let isNumericKeyboard = true;
 
     const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
@@ -1028,27 +1014,6 @@
         badge.className = 'text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded uppercase';
       }
     }
-
-    // --- CONMUTADOR TECLADO 123 / ABC ---
-    window.toggleKeyboardMode = function() {
-      isNumericKeyboard = !isNumericKeyboard;
-      const input = document.getElementById('searchInput');
-      const label = document.getElementById('kbModeLabel');
-      const btn = document.getElementById('kbModeBtn');
-
-      if (isNumericKeyboard) {
-        input.setAttribute('inputmode', 'numeric');
-        input.placeholder = "Introduce ID (ej: 13481810)";
-        label.textContent = "Modo: 123 (ID)";
-        btn.className = "text-[10px] font-black px-2 py-1 rounded-lg border border-slate-300 bg-slate-100 text-brand-navy transition flex items-center gap-1";
-      } else {
-        input.setAttribute('inputmode', 'search');
-        input.placeholder = "Escribe nombre, rótulo o calle...";
-        label.textContent = "Modo: ABC (Texto)";
-        btn.className = "text-[10px] font-black px-2 py-1 rounded-lg border border-brand-blue bg-blue-50 text-brand-blue transition flex items-center gap-1";
-      }
-      input.focus();
-    };
 
     // --- ALIAS / RÓTULO COMERCIAL HELPERS ---
     function getDealerAlias(id) {

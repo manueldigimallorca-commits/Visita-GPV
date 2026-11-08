@@ -8,7 +8,7 @@
  *    para no bloquear la carga si no hay red.
  */
 
-const VERSION = 'v4.4.0';
+const VERSION = 'v4.4.1';
 const CACHE_STATIC = `cartera-gpv-static-${VERSION}`;
 const CACHE_RUNTIME = `cartera-gpv-runtime-${VERSION}`;
 
