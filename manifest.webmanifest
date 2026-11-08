@@ -1,7 +1,7 @@
 {
-  "name": "DigiGPV Baleares · Visor Táctico",
-  "short_name": "DigiGPV",
-  "description": "Consulta pre-visita de distribuidores DIGI. Cartera propia, notas y rótulos guardados solo en el dispositivo.",
+  "name": "Cartera GPV · Visor Táctico",
+  "short_name": "Cartera GPV",
+  "description": "Consulta pre-visita de distribuidores. Cartera propia, notas y rótulos guardados solo en el dispositivo.",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",

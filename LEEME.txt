@@ -1,0 +1,86 @@
+============================================================
+  Cartera GPV · Visor Tactico  (v4.4.0)
+============================================================
+
+Que es
+-------
+App para consultar la cartera de distribuidores antes de una
+visita: datos de ventas, alertas tacticas, notas y rotulos.
+
+NO trae distribuidores precargados. Cada comercial carga su
+propio Excel la primera vez.
+
+Contenido del paquete
+---------------------
+  index.html              La aplicacion
+  manifest.webmanifest    Configuracion de la app instalable
+  sw.js                   Cache para funcionar sin cobertura
+  icons\                  Iconos de la app
+  LEEME.txt               Este archivo
+
+IMPORTANTE: la carpeta "icons" debe quedarse junto a
+index.html y conservar ese nombre. No la renombres ni la muevas.
+
+
+Como usarla
+-----------
+OPCION A - Con enlace web (recomendado)
+  1. Sube el contenido de esta carpeta a un hosting con HTTPS.
+  2. Abre el enlace en el movil.
+  3. Menu del navegador -> "Anadir a pantalla de inicio".
+  No hay que enviar archivos a nadie: basta con el enlace.
+
+OPCION B - Sin hosting
+  Los service workers solo funcionan en HTTPS o localhost.
+  Si abres index.html con doble clic (file://), la app se ve,
+  pero NO se instala ni guarda nada para uso sin cobertura.
+  Para probarla en local hace falta un servidor, por ejemplo:
+      python -m http.server 8000
+  y abrir http://localhost:8000
+
+
+Primer uso
+----------
+  1. Abre la app: veras la pantalla "Carga tu cartera".
+  2. Pulsa "Cargar mi Excel" y elige tu archivo CDM Movil (.xlsx).
+  3. Cuando termine, el buscador se activa con tu cartera.
+  4. Puedes reemplazar el Excel cuando quieras desde el boton
+     "Cambiar Excel" o desde Ajustes (rueda dentada).
+
+
+Tus datos
+---------
+- La cartera, las notas y los rotulos se guardan SOLO en este
+  dispositivo y en este navegador. No se envia nada a ningun
+  servidor.
+- Si cambias de movil o borras los datos del navegador, se pierde
+  todo. Antes de eso, usa Ajustes -> "Exportar copia de seguridad"
+  y guarda el archivo .json.
+- Para recuperarlo: Ajustes -> "Importar copia de seguridad".
+- Ajustes -> "Borrar todos los datos" deja el dispositivo limpio.
+
+
+Varios comerciales
+------------------
+Cada comercial usa su propio movil/navegador con su Excel.
+El almacenamiento es por dispositivo, asi que no se pisan.
+Si se comparte un movil, la app avisa cuando el Excel cargado
+pertenece a otro comercial antes de sustituir la cartera.
+
+
+Actualizaciones
+---------------
+Sustituye los archivos por los nuevos manteniendo la estructura.
+La cartera y las notas guardadas se conservan. Si la app avisa
+de una "nueva version disponible", cierrala y vuelve a abrirla.
+
+
+Problemas frecuentes
+--------------------
+- "Falta el lector de Excel": la primera vez necesita internet
+  para descargar la libreria. Despues queda guardada.
+- No aparece "Instalar": entra por HTTPS, no por file://.
+- No veo mi cartera en otro navegador: los datos no se comparten
+  entre navegadores; exporta e importa la copia de seguridad.
+
+============================================================
