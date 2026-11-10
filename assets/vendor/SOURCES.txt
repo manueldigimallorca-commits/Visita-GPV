@@ -1,0 +1,13 @@
+SheetJS Community Edition 0.20.3
+https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js
+License: Apache-2.0 (LICENSE.txt in this folder).
+
+Public Sans variable
+https://github.com/google/fonts/tree/main/ofl/publicsans
+Local file: ../fonts/public-sans-variable.ttf
+License: SIL Open Font License 1.1 (../fonts/LICENSE.txt).
+
+Tailwind CSS 3.4.19
+https://github.com/tailwindlabs/tailwindcss/tree/v3.4.19
+Generated file: ../utilities.css
+License: MIT (TAILWIND-LICENSE.txt in this folder).

@@ -1,16 +1,10 @@
-/* Cartera GPV · Service Worker
- * Estrategia:
- *  - Navegaciones (documentos HTML): network-first con fallback a caché.
- *    Así las actualizaciones llegan en cuanto hay cobertura, pero la app
- *    sigue abriendo sin conexión.
- *  - Mismo origen (CSS/JS/iconos/manifest): cache-first + refresco en segundo plano.
- *  - Terceros (Tailwind, Fonts, SheetJS): stale-while-revalidate, con timeout
- *    para no bloquear la carga si no hay red.
+/* Cartera GPV: paquete offline completo y coherente por versión.
+ * No se activa una versión si falta un recurso imprescindible.
+ * Cache-first evita esperas de red y mezclar HTML/CSS de versiones distintas.
  */
 
-const VERSION = 'v4.4.1';
+const VERSION = 'v4.6.0';
 const CACHE_STATIC = `cartera-gpv-static-${VERSION}`;
-const CACHE_RUNTIME = `cartera-gpv-runtime-${VERSION}`;
 
 const APP_FILE = './index.html';
 
@@ -18,6 +12,10 @@ const PRECACHE_URLS = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './assets/utilities.css',
+  './assets/app.css',
+  './assets/vendor/xlsx.full.min.js',
+  './assets/fonts/public-sans-variable.ttf',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
@@ -29,18 +27,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_STATIC);
-      // addAll falla si un solo recurso falla; los añadimos uno a uno.
-      await Promise.all(
-        PRECACHE_URLS.map(async (url) => {
-          try {
-            const res = await fetch(new Request(url, { cache: 'reload' }));
-            if (res && res.ok) await cache.put(url, res);
-          } catch (err) {
-            // Un recurso opcional no debe romper la instalación.
-          }
-        })
-      );
-      await self.skipWaiting();
+      await cache.addAll(PRECACHE_URLS.map(url => new Request(url, { cache: 'reload' })));
+      // Las actualizaciones esperan confirmación para no interrumpir una visita.
+      if (!self.registration.active) await self.skipWaiting();
     })()
   );
 });
@@ -52,7 +41,7 @@ self.addEventListener('activate', (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => k !== CACHE_STATIC && k !== CACHE_RUNTIME)
+          .filter((k) => k.startsWith('cartera-gpv-') && k !== CACHE_STATIC)
           .map((k) => caches.delete(k))
       );
       await self.clients.claim();
@@ -95,10 +84,16 @@ self.addEventListener('fetch', (event) => {
 
   const url = request.url;
 
-  // 1) Navegaciones: network-first, fallback a la app cacheada.
+  // No se interceptan otros orígenes. La aplicación no necesita ninguno.
+  if (!isSameOrigin(url)) return;
+
+  // 1) Navegaciones: abrir inmediatamente la versión instalada.
   if (isNavigation(request)) {
     event.respondWith(
       (async () => {
+        const installed = await caches.open(CACHE_STATIC);
+        const shell = await installed.match(APP_FILE);
+        if (shell) return shell;
         try {
           const fresh = await fetchWithTimeout(request, 4500);
           // Solo aceptamos respuestas buenas. Un 5xx (servidor caído, proxy, etc.)
@@ -132,19 +127,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2) Mismo origen: cache-first + actualización en segundo plano.
+  // 2) Recursos locales: misma versión que el documento instalado.
   if (isSameOrigin(url)) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_STATIC);
         const cached = await cache.match(request);
         if (cached) {
-          // Revalidación silenciosa
-          fetch(request)
-            .then((res) => {
-              if (res && res.ok) cache.put(request, res.clone()).catch(() => {});
-            })
-            .catch(() => {});
           return cached;
         }
         try {
@@ -162,26 +151,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3) Terceros: stale-while-revalidate con timeout.
-  event.respondWith(
-    (async () => {
-      const cache = await caches.open(CACHE_RUNTIME);
-      const cached = await cache.match(request);
-
-      const network = fetchWithTimeout(request, 6000)
-        .then((res) => {
-          if (res && (res.ok || res.type === 'opaque')) {
-            cache.put(request, res.clone()).catch(() => {});
-          }
-          return res;
-        })
-        .catch(() => null);
-
-      if (cached) return cached;
-      const fresh = await network;
-      return fresh || new Response('', { status: 504, statusText: 'Offline' });
-    })()
-  );
 });
 
 // ---- Mensajes desde la app ----
@@ -192,5 +161,12 @@ self.addEventListener('message', (event) => {
   }
   if (data.type === 'GET_VERSION' && event.source) {
     event.source.postMessage({ type: 'VERSION', version: VERSION });
+  }
+  if (data.type === 'CHECK_OFFLINE' && event.source) {
+    event.waitUntil((async () => {
+      const cache = await caches.open(CACHE_STATIC);
+      const resources = await Promise.all(PRECACHE_URLS.map(url => cache.match(url)));
+      event.source.postMessage({ type: 'OFFLINE_STATUS', ready: resources.every(Boolean), version: VERSION });
+    })());
   }
 });

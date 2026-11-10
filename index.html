@@ -2,7 +2,7 @@
 <html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cartera GPV | Consulta Pre-Visita</title>
   
   <!-- Optimización Móvil y PWA -->
@@ -18,223 +18,27 @@
   <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
 
-  <!-- Tailwind CSS (CDN con Fallback CSS Offline integrado abajo) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <!-- SheetJS: Motor de lectura de Excel en navegador móvil -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Todos los recursos se sirven desde esta carpeta, también sin conexión. -->
+  <link rel="preload" href="./assets/fonts/public-sans-variable.ttf" as="font" type="font/ttf" crossorigin>
+  <script defer src="./assets/vendor/xlsx.full.min.js"></script>
 
-  <script>
-    if (typeof tailwind !== 'undefined') {
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-            },
-            colors: {
-              brand: {
-                navy: '#001e4d',
-                800: '#002b66',
-                700: '#003a8c',
-                blue: '#0049b7',
-                cyan: '#00b0ff',
-                yellow: '#ffcc00',
-                yellowDark: '#d9ad00',
-                surface: '#f8fafc',
-              }
-            }
-          }
-        }
-      };
-    }
-  </script>
-
-  <!-- BLINDAJE CSS 100% OFFLINE (Garantiza diseño completo incluso sin cobertura ni caché de CDN) -->
+  <!-- Base crítica; las utilidades completas se distribuyen como CSS local. -->
   <style>
     *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e2e8f0; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; padding: 0; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f1f5f9; color: #1e293b; -webkit-font-smoothing: antialiased; }
+    html, body { margin: 0; padding: 0; height: 100%; font-family: 'Public Sans', 'Segoe UI', Arial, sans-serif; background-color: #eef3f8; color: #1e293b; -webkit-font-smoothing: antialiased; }
     .pb-safe { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
     .pt-safe { padding-top: max(0.75rem, env(safe-area-inset-top)); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Utilidades críticas Offline Fallback */
     .hidden { display: none !important; }
-    .flex { display: flex; }
-    .inline-flex { display: inline-flex; }
-    .flex-col { flex-direction: column; }
-    .flex-wrap { flex-wrap: wrap; }
-    .flex-1 { flex: 1 1 0%; }
-    .items-center { align-items: center; }
-    .items-start { align-items: flex-start; }
-    .justify-between { justify-content: space-between; }
-    .justify-center { justify-content: center; }
-    .justify-start { justify-content: flex-start; }
-    .grid { display: grid; }
-    .grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-    .grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .gap-1 { gap: 0.25rem; }
-    .gap-1\.5 { gap: 0.375rem; }
-    .gap-2 { gap: 0.5rem; }
-    .w-full { width: 100%; }
-    .max-w-md { max-width: 28rem; }
-    .mx-auto { margin-left: auto; margin-right: auto; }
-    .p-2 { padding: 0.5rem; }
-    .p-2\.5 { padding: 0.625rem; }
-    .p-3 { padding: 0.75rem; }
-    .p-4 { padding: 1rem; }
-    .p-5 { padding: 1.25rem; }
-    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
-    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-    .px-4 { padding-left: 1rem; padding-right: 1rem; }
-    .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
-    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
-    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-    .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
-    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
-    .rounded { border-radius: 0.25rem; }
-    .rounded-lg { border-radius: 0.5rem; }
-    .rounded-xl { border-radius: 0.75rem; }
-    .rounded-2xl { border-radius: 1rem; }
-    .rounded-full { border-radius: 9999px; }
-    .border { border-width: 1px; }
-    .border-2 { border-width: 2px; }
-    .border-t { border-top-width: 1px; }
-    .border-b { border-bottom-width: 1px; }
-    .bg-white { background-color: #ffffff; }
-    .bg-slate-50 { background-color: #f8fafc; }
-    .bg-slate-100 { background-color: #f1f5f9; }
-    .bg-brand-navy { background-color: #001e4d; }
-    .bg-brand-800 { background-color: #002b66; }
-    .bg-brand-700 { background-color: #003a8c; }
-    .bg-brand-blue { background-color: #0049b7; }
-    .bg-brand-yellow { background-color: #ffcc00; }
-    .bg-emerald-50 { background-color: #ecfdf5; }
-    .bg-emerald-100 { background-color: #d1fae5; }
-    .bg-emerald-600 { background-color: #059669; }
-    .bg-amber-50 { background-color: #fffbeb; }
-    .bg-amber-100 { background-color: #fef3c7; }
-    .bg-rose-50 { background-color: #fff1f2; }
-    .bg-rose-100 { background-color: #ffe4e6; }
-    .bg-blue-50 { background-color: #eff6ff; }
-    .bg-blue-100 { background-color: #dbeafe; }
-    .bg-sky-50 { background-color: #f0f9ff; }
-    .bg-indigo-50 { background-color: #eef2ff; }
-    .bg-purple-50 { background-color: #faf5ff; }
-    .text-white { color: #ffffff; }
-    .text-brand-navy { color: #001e4d; }
-    .text-brand-blue { color: #0049b7; }
-    .text-brand-cyan { color: #00b0ff; }
-    .text-brand-yellow { color: #ffcc00; }
-    .text-slate-400 { color: #94a3b8; }
-    .text-slate-500 { color: #64748b; }
-    .text-slate-600 { color: #475569; }
-    .text-slate-700 { color: #334155; }
-    .text-slate-800 { color: #1e293b; }
-    .text-slate-900 { color: #0f172a; }
-    .text-emerald-800 { color: #065f46; }
-    .text-emerald-900 { color: #064e3b; }
-    .text-amber-900 { color: #78350f; }
-    .text-amber-950 { color: #451a03; }
-    .text-rose-800 { color: #9f1239; }
-    .text-rose-950 { color: #4c0519; }
-    .font-medium { font-weight: 500; }
-    .font-semibold { font-weight: 600; }
-    .font-bold { font-weight: 700; }
-    .font-black { font-weight: 900; }
-    .text-xs { font-size: 0.75rem; line-height: 1rem; }
-    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-    .text-base { font-size: 1rem; line-height: 1.5rem; }
-    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-    .text-center { text-align: center; }
-    .text-left { text-align: left; }
-    .uppercase { text-transform: uppercase; }
-    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-    .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
-    .sticky { position: sticky; }
-    .relative { position: relative; }
-    .absolute { position: absolute; }
-    .fixed { position: fixed; }
-    .top-0 { top: 0; }
-    .z-40 { z-index: 40; }
-    .z-50 { z-index: 50; }
-    .cursor-pointer { cursor: pointer; }
     button { cursor: pointer; background: transparent; }
     input, textarea { font-family: inherit; }
-
-    /* Tamaños y utilidades extra usadas en la app (refuerzo offline) */
-    .text-\[9px\] { font-size: 9px; line-height: 12px; }
-    .text-\[10px\] { font-size: 10px; line-height: 14px; }
-    .text-\[11px\] { font-size: 11px; line-height: 15px; }
-    .px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
-    .gap-1\.5 { gap: 0.375rem; }
-    .gap-2\.5 { gap: 0.625rem; }
-    .leading-relaxed { line-height: 1.625; }
-    .leading-none { line-height: 1; }
-    .mb-1\.5 { margin-bottom: 0.375rem; }
-    .mb-2 { margin-bottom: 0.5rem; }
-    .mb-3 { margin-bottom: 0.75rem; }
-    .mt-1\.5 { margin-top: 0.375rem; }
-    .mt-2 { margin-top: 0.5rem; }
-    .mt-3 { margin-top: 0.75rem; }
-    .mt-5 { margin-top: 1.25rem; }
-    .p-6 { padding: 1.5rem; }
-    .pt-2 { padding-top: 0.5rem; }
-    .pt-3 { padding-top: 0.75rem; }
-    .w-7 { width: 1.75rem; }
-    .h-7 { height: 1.75rem; }
-    .w-14 { width: 3.5rem; }
-    .h-14 { height: 3.5rem; }
-    .bg-slate-600 { background-color: #475569; }
-    .text-slate-200 { color: #e2e8f0; }
-    .text-slate-300 { color: #cbd5e1; }
-    .border-slate-300 { border-color: #cbd5e1; }
-    .border-blue-200 { border-color: #bfdbfe; }
-    .border-amber-200 { border-color: #fde68a; }
-    .border-rose-200 { border-color: #fecdd3; }
-    .text-blue-900 { color: #1e3a8a; }
-    .text-emerald-600 { color: #059669; }
-    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-
-    /* Iconos y utilidades de layout (refuerzo offline) */
     svg { display: block; flex-shrink: 0; }
-    .w-2 { width: 0.5rem; } .h-2 { height: 0.5rem; }
-    .w-2\.5 { width: 0.625rem; } .h-2\.5 { height: 0.625rem; }
-    .w-3\.5 { width: 0.875rem; } .h-3\.5 { height: 0.875rem; }
-    .w-4 { width: 1rem; } .h-4 { height: 1rem; }
-    .w-5 { width: 1.25rem; } .h-5 { height: 1.25rem; }
-    .w-8 { width: 2rem; } .h-8 { height: 2rem; }
-    .shrink-0 { flex-shrink: 0; }
-    .mt-auto { margin-top: auto; }
-    .pt-6 { padding-top: 1.5rem; }
-    .border-brand-700 { border-color: #003a8c; }
-    .border-brand-800 { border-color: #002b66; }
-    .border-slate-700 { border-color: #334155; }
-    .bg-slate-900\/95 { background-color: rgba(15, 23, 42, 0.95); }
-    .max-w-xs { max-width: 20rem; }
-    .top-14 { top: 3.5rem; }
-    .inset-x-0 { left: 0; right: 0; }
-    .space-x-2\.5 > * + * { margin-left: 0.625rem; }
-    .transition-all { transition: all 0.3s ease; }
-    .duration-300 { transition-duration: 0.3s; }
-    .-translate-y-10 { transform: translateY(-2.5rem); }
-    .translate-y-0 { transform: translateY(0); }
-    .opacity-0 { opacity: 0; }
-    .opacity-100 { opacity: 1; }
-    .pointer-events-none { pointer-events: none; }
     #toast.opacity-0 { opacity: 0; pointer-events: none; }
     #toast.opacity-100 { opacity: 1; pointer-events: auto; }
 
-    /* Modal de ajustes: estilos propios para que funcione aunque Tailwind no cargue */
+    /* El modal permanece oculto hasta que el usuario lo solicita. */
     #settingsModal { position: fixed; inset: 0; z-index: 60; background: rgba(15, 23, 42, 0.62); display: flex; align-items: flex-end; justify-content: center; }
     #settingsModal.hidden { display: none !important; }
     #settingsPanel { background: #fff; width: 100%; max-width: 28rem; border-radius: 1rem 1rem 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28); max-height: 88vh; overflow-y: auto; }
@@ -243,12 +47,14 @@
       #settingsPanel { border-radius: 1rem; }
     }
   </style>
+  <link rel="stylesheet" href="./assets/utilities.css">
+  <link rel="stylesheet" href="./assets/app.css">
 </head>
 
 <body class="bg-slate-100 text-slate-800 antialiased font-sans min-h-full flex flex-col selection:bg-brand-yellow selection:text-brand-navy">
 
   <!-- ================= TOP APP BAR ================= -->
-  <header class="sticky top-0 z-40 bg-brand-navy text-white shadow-md border-b border-brand-800 pt-safe">
+  <header class="app-header sticky top-0 z-40 bg-brand-navy text-white border-b border-brand-800 pt-safe">
     <div class="max-w-md mx-auto px-4 py-2.5 flex items-center justify-between">
       <div class="flex items-center space-x-2.5">
         <div class="w-8 h-8 rounded-lg bg-brand-yellow flex items-center justify-center font-black text-brand-navy text-xs tracking-tighter shadow-sm">
@@ -259,7 +65,7 @@
             Cartera GPV
             <span id="syncStatusBadge" class="text-[9px] bg-slate-600 text-slate-200 font-bold px-1.5 py-0.5 rounded uppercase">Vacío</span>
           </h1>
-          <p class="text-[11px] text-slate-300 font-medium">Visita Táctica</p>
+          <p class="text-[11px] text-slate-300 font-medium">Tu próxima visita, en contexto</p>
         </div>
       </div>
 
@@ -276,13 +82,14 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
           </svg>
-          <span>Excel</span>
+          <span>Cargar Excel</span>
         </button>
 
         <button 
           onclick="window.resetSearch()" 
           class="text-xs bg-brand-800 hover:bg-brand-700 active:scale-95 text-slate-200 px-2 py-1.5 rounded-lg border border-brand-700 transition"
           title="Ir al buscador"
+          aria-label="Ir al buscador"
         >
           <svg class="w-3.5 h-3.5 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -303,9 +110,16 @@
       </div>
     </div>
   </header>
+  <div class="device-status" role="status" aria-live="polite">
+    <div class="device-status-inner">
+      <span id="offlineStatus" data-state="pending">Preparando uso sin conexión…</span>
+      <span id="connectionStatus">Datos solo en este dispositivo</span>
+      <button id="updateAppBtn" type="button" class="hidden" onclick="window.applyAppUpdate()">Actualizar aplicación</button>
+    </div>
+  </div>
 
   <!-- ================= FLOATING TOAST NOTIFICATION ================= -->
-  <div id="toast" class="fixed top-14 inset-x-0 mx-auto max-w-xs z-50 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 flex items-center justify-center">
+  <div id="toast" role="status" aria-live="polite" class="fixed top-14 inset-x-0 mx-auto max-w-xs z-50 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-300 flex items-center justify-center">
     <div class="bg-slate-900/95 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-2xl border border-slate-700 flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-brand-yellow"></span>
       <span id="toastMsg">Mensaje</span>
@@ -317,17 +131,22 @@
 
     <!-- ESTADO VACÍO: la app arranca sin cartera precargada -->
     <div id="emptyState">
-      <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 text-center">
+      <div class="welcome-panel bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="welcome-intro">
         <div class="mx-auto w-14 h-14 rounded-2xl bg-brand-navy flex items-center justify-center mb-4 shadow-sm">
           <svg class="w-7 h-7 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
           </svg>
         </div>
-        <h2 class="text-base font-black text-brand-navy tracking-tight">Carga tu cartera</h2>
+        <h2 class="text-base font-black text-brand-navy tracking-tight">Tu cartera, lista para la visita.</h2>
         <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-          Esta app no trae distribuidores de serie. Sube el Excel de <strong>tu</strong> cartera (CDM Móvil)
-          y el buscador se activará al instante.
+          Menos tiempo buscando en el Excel. Ventas, oportunidades y notas de cada distribuidor, a mano cuando llegas a su tienda.
         </p>
+        <div class="welcome-capabilities"><span>Ventas y previsiones</span><span>Notas de visita</span><span>Consulta sin cobertura</span></div>
+        </div>
+        <div class="welcome-upload">
+        <h3>Empieza con tu Excel</h3>
+        <p>Selecciona el archivo CDM Móvil de tu cartera. Se lee aquí, sin subirlo a ningún servidor.</p>
         <button
           type="button"
           onclick="window.triggerUpload()"
@@ -339,6 +158,7 @@
           <span>Cargar mi Excel</span>
         </button>
         <p class="text-[10px] text-slate-400 mt-3">Formato .xlsx / .xls · Puedes reemplazarlo cuando quieras</p>
+        </div>
       </div>
 
       <div class="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-blue-900 leading-relaxed">
@@ -356,7 +176,7 @@
     <div id="loadedState" class="hidden">
     
     <!-- Database Status Bar -->
-    <div class="bg-white rounded-2xl shadow-xs border border-slate-200/90 p-3 mb-3.5">
+    <div id="portfolioStatus" class="bg-white rounded-2xl border border-slate-200/90 p-3 mb-3.5">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -377,11 +197,11 @@
     </div>
 
     <!-- Main Search Card -->
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5">
+    <div id="searchPanel" class="bg-white rounded-2xl border border-slate-200 p-5">
       <div class="flex items-center justify-between mb-1">
         <div class="flex items-center gap-2">
           <div class="w-2 h-2 rounded-full bg-brand-yellow"></div>
-          <h2 class="text-base font-bold text-brand-navy tracking-tight">Buscar Distribuidor</h2>
+          <h2 class="text-base font-bold text-brand-navy tracking-tight">¿Qué tienda visitas hoy?</h2>
         </div>
       </div>
       <p class="text-xs text-slate-500 mb-4">
@@ -399,7 +219,8 @@
           <input 
             type="search" 
             id="searchInput" 
-            placeholder="ID, nombre o calle…" 
+            aria-label="Buscar por ID, nombre, código postal o rótulo"
+            placeholder="ID, nombre, CP o rótulo…" 
             autocomplete="off"
             autocorrect="off"
             spellcheck="false"
@@ -410,6 +231,7 @@
           <button 
             type="button" 
             id="clearSearchBtn" 
+            aria-label="Borrar búsqueda"
             onclick="window.clearSearchField()" 
             class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden"
           >
@@ -428,7 +250,7 @@
           type="submit" 
           class="w-full bg-brand-800 hover:bg-brand-700 active:bg-brand-navy text-white font-bold py-3.5 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2"
         >
-          <span>Abrir Ficha Táctica</span>
+          <span>Ver distribuidor</span>
           <svg class="w-4 h-4 text-brand-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
           </svg>
@@ -456,7 +278,7 @@
           <svg class="w-3.5 h-3.5 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          Últimas Consultas
+          Últimas consultas
         </h3>
         <button onclick="window.clearRecents()" class="text-[10px] text-slate-400 hover:text-rose-600 font-medium">Borrar</button>
       </div>
@@ -488,7 +310,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
         </svg>
-        <span>← Buscar otro dealer</span>
+        <span>Buscar otra tienda</span>
       </button>
 
       <span id="dIdBadge" class="font-mono text-xs font-black bg-brand-navy text-brand-yellow px-2.5 py-1 rounded-lg">
@@ -497,8 +319,7 @@
     </div>
 
     <!-- Dealer Info Header -->
-    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative overflow-hidden">
-      <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-brand-navy via-brand-blue to-brand-yellow"></div>
+    <div id="dealerIdentity" class="bg-white rounded-2xl p-4 border border-slate-200 relative overflow-hidden">
       
       <div class="pt-1">
         <h2 id="dName" class="text-lg font-black text-slate-900 leading-snug tracking-tight">
@@ -527,6 +348,7 @@
             <input 
               type="text" 
               id="aliasInput" 
+              aria-label="Nombre comercial o dirección"
               placeholder="Ej: Locutorio Baraka - C/ Manacor 42" 
               class="flex-1 text-xs font-semibold px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg focus:bg-white focus:outline-none focus:border-brand-blue"
             >
@@ -544,7 +366,7 @@
           <svg class="w-3.5 h-3.5 text-brand-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
           </svg>
-          <span id="dLocation">07004 · Palma Norte (Palma de Mallorca)</span>
+          <span id="dLocation">s/d · s/d (s/d)</span>
         </p>
 
         <!-- Status Badges Strip -->
@@ -565,31 +387,22 @@
       </div>
     </div>
 
-    <!-- Tactical Alert / Pre-Visit Focus -->
-    <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs">
-      <div class="font-black text-xs uppercase tracking-tight flex items-center gap-1.5 mb-2">
-        <span id="dTacticalTitle">🎯 FOCO TÁCTICO PRE-VISITA</span>
-      </div>
-      <ul id="dTacticalList" class="text-xs space-y-1.5 list-disc list-inside leading-relaxed font-medium">
-        <!-- Injected via JS -->
-      </ul>
-    </div>
-
     <!-- SALES EVOLUTION CARDS -->
-    <div class="space-y-2.5">
+    <div id="dealerSales" class="space-y-2.5">
       <div class="flex items-center justify-between px-1">
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">
-          Evolución de Ventas
+          Evolución de ventas
         </h3>
         <span class="text-[10px] text-slate-400 font-semibold">M-3 ➔ M-2 ➔ M-1 ➔ ACT ➔ Proy | LY</span>
       </div>
+      <details class="trend-help"><summary>Cómo interpretar las previsiones</summary><p>Comparamos PROY con M-1 y LY, no el mes actual incompleto. Seguimiento por debajo de −10 %; alerta desde −30 %, con pérdida mínima de 3 unidades en prepago o 2 en fibra/contrato. PROY es una estimación del Excel, no un cierre real.</p><p>M-3, M-2 y M-1: meses anteriores. ACT: ventas acumuladas. LY: mismo mes del año anterior. s/d: dato no disponible.</p></details>
 
       <!-- 1. PREPAGO -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex flex-wrap gap-2 items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-            <span class="text-xs font-black text-slate-900">PREPAGO</span>
+            <span class="text-xs font-black text-slate-900">Prepago</span>
           </div>
           <div class="flex items-center gap-1">
             <span id="lyPrepagoBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
@@ -629,10 +442,10 @@
 
       <!-- 2. FIBRA SMART (Se compacta automáticamente si no tiene acceso ni ventas) -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
-        <div class="flex items-center justify-between mb-1.5">
+        <div class="flex flex-wrap gap-2 items-center justify-between mb-1.5">
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
-            <span class="text-xs font-black text-slate-900">FIBRA SMART</span>
+            <span class="text-xs font-black text-slate-900">Fibra Smart</span>
           </div>
           <div class="flex items-center gap-1">
             <span id="lyFibraBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
@@ -678,10 +491,10 @@
 
       <!-- 3. MÓVIL CONTRATO -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex flex-wrap gap-2 items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-blue"></span>
-            <span class="text-xs font-black text-slate-900">MÓVIL CONTRATO</span>
+            <span class="text-xs font-black text-slate-900">Móvil contrato</span>
           </div>
           <div class="flex items-center gap-1">
             <span id="lyMovilBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
@@ -756,14 +569,22 @@
       </div>
     </div>
 
+    <!-- Foco de visita: después de las ventas en móvil, a su lado en tablet. -->
+    <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs">
+      <div class="font-black text-xs tracking-tight flex items-center gap-1.5 mb-2">
+        <span id="dTacticalTitle">Tu visita, en contexto</span>
+      </div>
+      <ul id="dTacticalList" class="text-xs leading-relaxed"><!-- Contenido generado con las proyecciones. --></ul>
+    </div>
+
     <!-- VISIT NOTES (Con Botones Rápidos 1-Toque) & WHATSAPP REPORT -->
-    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+    <div id="visitNotesPanel" class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
           <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
           </svg>
-          <span>Notas Rápidas de la Visita</span>
+          <label for="visitNotes">Notas de la visita</label>
         </div>
         <span id="notesSavedAlert" class="text-[10px] text-emerald-600 font-bold hidden">Guardado ✓</span>
       </div>
@@ -789,6 +610,7 @@
 
       <textarea 
         id="visitNotes" 
+        aria-label="Notas de la visita"
         rows="2" 
         oninput="window.handleNoteInput()" 
         placeholder="Toca las etiquetas de arriba o escribe tus notas..."
@@ -803,20 +625,20 @@
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
         </svg>
-        <span>Copiar Resumen para WhatsApp</span>
+        <span>Copiar resumen para WhatsApp</span>
       </button>
     </div>
 
     <!-- Extra Bottom Padding for mobile navigation bars -->
-    <div class="h-8"></div>
+    <div class="dealer-bottom-space h-8"></div>
   </main>
 
 
   <!-- ================= MODAL AJUSTES / COPIA DE SEGURIDAD ================= -->
   <div id="settingsModal" class="hidden" onclick="if (event.target === this) window.closeSettings()">
-    <div id="settingsPanel">
+    <div id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1">
       <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
-        <h2 class="text-sm font-black text-brand-navy">Ajustes y copia de seguridad</h2>
+        <h2 id="settingsTitle" class="text-sm font-black text-brand-navy">Ajustes y copia de seguridad</h2>
         <button
           type="button"
           onclick="window.closeSettings()"
@@ -895,7 +717,7 @@
       </div>
 
       <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-        <span>Cartera GPV · v4</span>
+        <span>Cartera GPV · v4.6.0</span>
         <span>Sin datos precargados</span>
       </div>
     </div>
@@ -915,6 +737,8 @@
     let CURRENT_DEALERS_MAP = {};
     let activeDealer = null;
     let noteDebounceTimer = null;
+    const DEALER_ALIASES = new Map();
+    let settingsReturnFocus = null;
 
     const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
@@ -937,6 +761,27 @@
         ev.preventDefault();
         window.selectDealer(row.getAttribute('data-dealer-id'));
       });
+      document.addEventListener('keydown', (ev) => {
+        const modal = document.getElementById('settingsModal');
+        if (!modal.classList.contains('hidden')) {
+          if (ev.key === 'Escape') window.closeSettings();
+          if (ev.key === 'Tab') {
+            const controls = [...modal.querySelectorAll('button:not(.hidden), input, [tabindex="0"]')].filter(el => el.getClientRects().length);
+            const first = controls[0], last = controls[controls.length - 1];
+            if (ev.shiftKey && (document.activeElement === first || document.activeElement === document.getElementById('settingsPanel'))) {
+              ev.preventDefault(); last?.focus();
+            } else if (!ev.shiftKey && document.activeElement === last) {
+              ev.preventDefault(); first?.focus();
+            }
+          }
+          return;
+        }
+        const row = ev.target.closest?.('[data-dealer-id]');
+        if (row && (ev.key === 'Enter' || ev.key === ' ')) {
+          ev.preventDefault();
+          window.selectDealer(row.getAttribute('data-dealer-id'));
+        }
+      });
 
       if (Object.keys(CURRENT_DEALERS_MAP).length > 0) {
         const input = document.getElementById('searchInput');
@@ -947,6 +792,7 @@
     // La app arranca SIEMPRE vacía: no hay cartera precargada.
     // Cada comercial sube su propio Excel y se guarda solo en su dispositivo.
     function loadDatabase() {
+      DEALER_ALIASES.clear();
       let stored = null;
       try { stored = localStorage.getItem(STORAGE_KEY_DB); } catch(e) {}
 
@@ -957,6 +803,20 @@
             CURRENT_DEALERS_MAP = parsed;
             let meta = {};
             try { meta = JSON.parse(localStorage.getItem(STORAGE_KEY_META) || '{}') || {}; } catch(e) {}
+            // Versiones anteriores confundían las celdas vacías con cero.
+            // No interpretar esos ceros antiguos como una caída confirmada.
+            if (meta.projectionSchema !== 2) {
+              let needsReload = false;
+              Object.values(CURRENT_DEALERS_MAP).forEach(d => {
+                ['p', 'fib', 'mov', 'tv'].forEach(key => {
+                  if (d[key] && d[key].proy === 0) {
+                    d[key].proy = null;
+                    needsReload = true;
+                  }
+                });
+              });
+              if (needsReload) window.showToast('Recarga tu Excel para validar las proyecciones cero de la versión anterior.');
+            }
             updateStatusUI(Object.keys(CURRENT_DEALERS_MAP).length, meta.lastUpdated || '--', meta.fileName || 'Excel cargado', meta);
             applyStateUI(true);
             return;
@@ -1007,7 +867,7 @@
 
       const who = meta.comercial ? `${meta.comercial} · ` : '';
       if (dateEl) {
-        dateEl.textContent = `${who}Actualizado: ${dateStr}${fileName ? ' (' + fileName + ')' : ''}`;
+        dateEl.textContent = `${who}Importado: ${dateStr}${fileName ? ' (' + fileName + ')' : ''}`;
       }
       if (badge) {
         badge.textContent = 'Excel Activo';
@@ -1017,7 +877,8 @@
 
     // --- ALIAS / RÓTULO COMERCIAL HELPERS ---
     function getDealerAlias(id) {
-      return localStorage.getItem(ALIAS_KEY_PREFIX + id) || '';
+      if (!DEALER_ALIASES.has(id)) DEALER_ALIASES.set(id, localStorage.getItem(ALIAS_KEY_PREFIX + id) || '');
+      return DEALER_ALIASES.get(id);
     }
 
     window.toggleAliasEditor = function() {
@@ -1047,6 +908,7 @@
       } else {
         localStorage.setItem(key, val);
       }
+      DEALER_ALIASES.set(activeDealer.id, val);
 
       document.getElementById('aliasEditorBox').classList.add('hidden');
       renderAliasUI(activeDealer.id);
@@ -1099,7 +961,7 @@
       if (!file) return;
 
       if (typeof XLSX === 'undefined') {
-        window.showToast("❌ Falta el lector de Excel. Conéctate una vez a internet y vuelve a intentarlo.");
+        window.showToast('No se ha cargado el lector de Excel. Reabre la app o comprueba la carpeta assets.');
         e.target.value = '';
         return;
       }
@@ -1149,6 +1011,7 @@
           comerciales: result.comerciales
         };
 
+        meta.projectionSchema = 2;
         // Guardamos primero en disco: si falla la cuota, no dejamos la app a medias
         localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(parsedMap));
         localStorage.setItem(STORAGE_KEY_META, JSON.stringify(meta));
@@ -1183,30 +1046,22 @@
       }
     };
 
-    // PARSER POR ÍNDICE DE COLUMNA REAL (Columna O = índice 14 = Fibra Actual, Columna G = índice 6 = Fecha firma)
+    // Lectura por encabezados; los índices documentan la estructura del CDM.
     function parseExcelMatrix(matrix) {
       const out = {};
       const comercialesSet = new Set();
       let coordinador = '';
       const rawHeaders = matrix[0].map(h => String(h || '').trim());
       const cleanHeaders = rawHeaders.map(h =>
-        h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        h.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ' ').replace(/\s+\d{4}$/, '')
       );
 
-      const getColIdx = (exactNames, fallbackIdx, forbiddenSubstrings = []) => {
+      const getColIdx = (exactNames) => {
         const exactIdx = cleanHeaders.findIndex(ch => exactNames.includes(ch));
         if (exactIdx !== -1) return exactIdx;
 
-        if (fallbackIdx !== undefined && fallbackIdx < cleanHeaders.length) {
-          const candidate = cleanHeaders[fallbackIdx];
-          const isForbidden = forbiddenSubstrings.some(sub => candidate.includes(sub));
-          if (!isForbidden) return fallbackIdx;
-        }
-
-        return cleanHeaders.findIndex(ch =>
-          exactNames.some(n => ch.includes(n)) &&
-          !forbiddenSubstrings.some(sub => ch.includes(sub))
-        );
+        // No adivinar por posición: una columna ausente no debe leer la contigua.
+        return -1;
       };
 
       const idxId       = getColIdx(['id', 'id distribuidor'], 2);
@@ -1253,6 +1108,15 @@
       const idxTvM2     = getColIdx(['digi tv m-2', 'tv m-2'], 38);
       const idxTvM1     = getColIdx(['digi tv m-1', 'tv m-1'], 39);
 
+      const required = [
+        ['ID', idxId], ['Nombre distribuidor', idxName], ['Comercial', idxComercial],
+        ['Fibra', idxFibAct], ['Proy Fibra', idxFibProy], ['Fibra M-1', idxFibM1], ['Fibra LY', idxFibLy],
+        ['Móvil', idxMovAct], ['Proy Pospago', idxMovProy], ['Posp M-1', idxMovM1], ['Posp LY', idxMovLy],
+        ['Prepago', idxPrepAct], ['Proy Prepago', idxPrepProy], ['Prep M-1', idxPrepM1], ['Prep LY', idxPrepLy]
+      ];
+      const missing = required.filter(([, idx]) => idx === -1).map(([name]) => name);
+      if (missing.length) throw new Error('Faltan columnas necesarias: ' + missing.join(', '));
+
       const getInt = (row, idx) => {
         if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null || row[idx] === '') return 0;
         const n = parseFloat(String(row[idx]).replace(',', '.'));
@@ -1260,9 +1124,9 @@
       };
 
       const getDec = (row, idx) => {
-        if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null || row[idx] === '') return 0.0;
-        const n = parseFloat(String(row[idx]).replace(',', '.'));
-        return isNaN(n) ? 0.0 : Math.round(n * 10) / 10;
+        if (idx === -1 || idx === undefined || row[idx] == null || String(row[idx]).trim() === '') return null;
+        const n = Number(String(row[idx]).trim().replace(',', '.'));
+        return Number.isFinite(n) && n >= 0 ? n : null;
       };
 
       for (let i = 1; i < matrix.length; i++) {
@@ -1271,6 +1135,9 @@
 
         const rawId = idxId !== -1 ? String(row[idxId] || '').trim() : '';
         if (!rawId || isNaN(Number(rawId))) continue;
+        if (Object.prototype.hasOwnProperty.call(out, rawId)) {
+          throw new Error(`ID duplicado ${rawId} en la fila ${i + 1}. Revisa el Excel.`);
+        }
 
         // Metadatos del Excel: quién es el comercial dueño de esta cartera
         const comercialRow = idxComercial !== -1 && row[idxComercial] ? String(row[idxComercial]).trim() : '';
@@ -1287,10 +1154,10 @@
         out[rawId] = {
           id: rawId,
           n: idxName !== -1 && row[idxName] ? String(row[idxName]).trim() : `Dealer ${rawId}`,
-          cp: idxCp !== -1 && row[idxCp] ? String(row[idxCp]).trim().padStart(5, '0') : '07000',
-          z: idxSubzona !== -1 && row[idxSubzona] ? String(row[idxSubzona]).trim() : 'Baleares',
-          m: idxMun !== -1 && row[idxMun] ? String(row[idxMun]).trim() : 'Palma de Mallorca',
-          h: idxHuella !== -1 && row[idxHuella] ? String(row[idxHuella]).trim() : 'Zona Smart',
+          cp: idxCp !== -1 && String(row[idxCp] ?? '').trim() ? String(row[idxCp]).trim().padStart(5, '0') : 's/d',
+          z: idxSubzona !== -1 && String(row[idxSubzona] ?? '').trim() ? String(row[idxSubzona]).trim() : 's/d',
+          m: idxMun !== -1 && String(row[idxMun] ?? '').trim() ? String(row[idxMun]).trim() : 's/d',
+          h: idxHuella !== -1 && String(row[idxHuella] ?? '').trim() ? String(row[idxHuella]).trim() : 's/d',
           f_acc: hasFibra,
           ff: ffParsed.label,
           ff_new: ffParsed.isNew,
@@ -1406,6 +1273,7 @@
         return `
           <div
             data-dealer-id="${escapeHtml(d.id)}"
+            role="button" tabindex="0" aria-label="Ver ${escapeHtml(d.n)}"
             class="p-3 hover:bg-slate-50 active:bg-blue-50 cursor-pointer flex items-center justify-between transition text-left"
           >
             <div>
@@ -1488,12 +1356,13 @@
 
     // --- RENDER DEDICATED DEALER CARD ---
     function renderDealerCard(d) {
+      flushPendingNote();
       activeDealer = d;
       saveToRecents(d);
 
       const setTxt = (id, val) => {
         const el = document.getElementById(id);
-        if (el) el.textContent = val !== undefined && val !== null ? val : '0';
+        if (el) el.textContent = val !== undefined && val !== null ? (typeof val === 'number' ? formatMetric(val) : val) : 's/d';
       };
 
       // Header info
@@ -1555,11 +1424,11 @@
       setTxt('pre_act', d.p.act);
       setTxt('pre_proy', d.p.proy);
       setTxt('pre_ly', d.p.ly);
-      updateTrendBadge('trendPrepagoBadge', d.p.act, d.p.m1, d.p.proy, false);
-      updateLyComparison('lyPrepagoBadge', 'pre_ly_box', d.p.proy, d.p.ly);
+      updateTrendBadge('trendPrepagoBadge', d.p.act, d.p.m1, d.p.proy, false, 'p');
+      updateLyComparison('lyPrepagoBadge', 'pre_ly_box', d.p.proy, d.p.ly, 'p');
 
       // 2. Fibra Metrics (Simplificar si no tiene acceso ni histórico)
-      const hasAnyFibraHistory = (d.fib.m3 + d.fib.m2 + d.fib.m1 + d.fib.act + d.fib.ly) > 0;
+      const hasAnyFibraHistory = (d.fib.m3 + d.fib.m2 + d.fib.m1 + d.fib.act + d.fib.ly) > 0 || d.fib.proy > 0;
       const fibGrid = document.getElementById('fibraGrid');
       const fibCompact = document.getElementById('fibraCompactBar');
 
@@ -1578,8 +1447,8 @@
         setTxt('fib_act', d.fib.act);
         setTxt('fib_proy', d.fib.proy);
         setTxt('fib_ly', d.fib.ly);
-        updateTrendBadge('trendFibraBadge', d.fib.act, d.fib.m1, d.fib.proy, !d.f_acc);
-        updateLyComparison('lyFibraBadge', 'fib_ly_box', d.fib.proy, d.fib.ly);
+        updateTrendBadge('trendFibraBadge', d.fib.act, d.fib.m1, d.fib.proy, false, 'fib');
+        updateLyComparison('lyFibraBadge', 'fib_ly_box', d.fib.proy, d.fib.ly, 'fib');
       }
 
       // 3. Móvil Metrics
@@ -1589,8 +1458,8 @@
       setTxt('mov_act', d.mov.act);
       setTxt('mov_proy', d.mov.proy);
       setTxt('mov_ly', d.mov.ly);
-      updateTrendBadge('trendMovilBadge', d.mov.act, d.mov.m1, d.mov.proy, false);
-      updateLyComparison('lyMovilBadge', 'mov_ly_box', d.mov.proy, d.mov.ly);
+      updateTrendBadge('trendMovilBadge', d.mov.act, d.mov.m1, d.mov.proy, false, 'mov');
+      updateLyComparison('lyMovilBadge', 'mov_ly_box', d.mov.proy, d.mov.ly, 'mov');
 
       // 4. TV (Ocultar cuando no aplica para evitar ruido visual)
       const hasAnyTv = (d.tv.m3 + d.tv.m2 + d.tv.m1 + d.tv.act) > 0;
@@ -1614,55 +1483,83 @@
       // Toggle views
       document.getElementById('homeView').classList.add('hidden');
       document.getElementById('dealerView').classList.remove('hidden');
+      const heading = document.getElementById('dName');
+      heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
       window.scrollTo(0, 0);
     }
 
-    // Indicador de tendencia con detección "¡Arranca!" (M-1=0 -> ACT>0)
-    function updateTrendBadge(elementId, act, m1, proy, isNoAccess = false) {
+    // Criterio compartido por indicadores, alertas y comparativas LY.
+    const TREND_RULES = { watchPct: -10, fallPct: -30, minLoss: { p: 3, fib: 2, mov: 2 } };
+    function formatMetric(value) {
+      return typeof value === 'number' && Number.isFinite(value)
+        ? value.toLocaleString('es-ES', { maximumFractionDigits: 1 }) : 's/d';
+    }
+
+    function evaluateProjection(proy, baseline, product) {
+      if (typeof proy !== 'number' || !Number.isFinite(proy) || proy < 0) return { state: 'missing' };
+      if (typeof baseline !== 'number' || !Number.isFinite(baseline) || baseline < 0) return { state: 'noBaseline' };
+      const diff = proy - baseline;
+      if (baseline === 0) return { state: proy > 0 ? 'new' : 'zero', diff, pct: null };
+      const pct = diff / baseline * 100;
+      const significantLoss = -diff >= (TREND_RULES.minLoss[product] || 2);
+      const state = pct <= TREND_RULES.fallPct && significantLoss ? 'fall'
+        : pct < TREND_RULES.watchPct && significantLoss ? 'watch'
+        : pct > 10 ? 'growth' : 'stable';
+      return { state, diff, pct };
+    }
+
+    function projectionSummary(result) {
+      if (result.pct == null) return `diferencia ${result.diff > 0 ? '+' : ''}${formatMetric(result.diff)}`;
+      const pct = Math.abs(result.pct) < 0.05 ? 0 : result.pct;
+      return `${pct > 0 ? '+' : ''}${formatMetric(pct)} % · ${result.diff > 0 ? '+' : ''}${formatMetric(result.diff)} uds.`;
+    }
+
+    function updateTrendBadge(elementId, act, m1, proy, isNoAccess = false, product = 'fib') {
       const el = document.getElementById(elementId);
       if (!el) return;
 
       if (isNoAccess) {
         el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500';
-        el.textContent = 'Sin Cobertura';
+        el.textContent = 'Sin acceso comercial';
         return;
       }
 
-      if (act === 0 && m1 === 0) {
-        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600';
-        el.textContent = 'Sin ventas';
-      } else if (m1 === 0 && act > 0) {
-        el.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-300';
-        el.textContent = `✨ ¡Arranca! (+${act})`;
-      } else if (proy >= m1) {
-        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
-        el.textContent = `▲ Sube (+${(proy - m1).toFixed(1)})`;
-      } else {
-        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800';
-        el.textContent = `▼ Cae (${(proy - m1).toFixed(1)})`;
-      }
+      const result = evaluateProjection(proy, m1, product);
+      const labels = { missing: 'Sin proyección', noBaseline: 'M-1: s/d', zero: 'Proy: 0 · M-1: 0',
+        new: '▲ Proy positiva · M-1: 0', fall: '▼ Caída prevista', watch: '↘ Seguimiento',
+        growth: '▲ Mejora prevista', stable: '≈ En línea / variación menor' };
+      const color = result.state === 'fall' ? 'bg-rose-100 text-rose-800'
+        : result.state === 'watch' ? 'bg-amber-100 text-amber-900'
+        : ['growth', 'new'].includes(result.state) ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600';
+      el.className = `text-[10px] font-bold px-2 py-0.5 rounded ${color}`;
+      el.textContent = labels[result.state];
+      el.title = `PROY ${formatMetric(proy)} · M-1 ${formatMetric(m1)}` +
+        (result.diff !== undefined ? ` · ${projectionSummary(result)}` : '');
     }
 
     // Semáforo comparativo contra el Año Anterior (vs LY)
-    function updateLyComparison(badgeId, boxId, proy, ly) {
+    function updateLyComparison(badgeId, boxId, proy, ly, product = 'fib') {
       const badge = document.getElementById(badgeId);
       const box = document.getElementById(boxId);
       if (!badge || !box) return;
 
-      if (ly === 0 && proy === 0) {
+      const result = evaluateProjection(proy, ly, product);
+      if (['zero', 'missing', 'noBaseline', 'stable'].includes(result.state)) {
         badge.classList.add('hidden');
         box.className = "rounded py-0.5";
         return;
       }
 
-      const diff = Math.round(proy - ly);
-      if (ly >= 2 && proy < ly * 0.65) {
-        badge.textContent = `vs LY: ${diff}`;
-        badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-200";
+      if (result.state === 'fall' || result.state === 'watch') {
+        badge.textContent = `Proy vs LY: ${projectionSummary(result)}`;
+        badge.className = result.state === 'fall'
+          ? 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-200'
+          : 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200';
         badge.classList.remove('hidden');
-        box.className = "bg-rose-50/80 rounded py-0.5 border border-rose-200";
-      } else if (ly > 0 && proy >= ly * 1.15) {
-        badge.textContent = `vs LY: +${diff}`;
+        box.className = result.state === 'fall' ? 'bg-rose-50/80 rounded py-0.5 border border-rose-200' : 'bg-amber-50 rounded py-0.5';
+      } else if (result.state === 'growth' || result.state === 'new') {
+        badge.textContent = ly === 0 ? `Proy ${formatMetric(proy)} · LY: 0` : `Proy vs LY: ${projectionSummary(result)}`;
         badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200";
         badge.classList.remove('hidden');
         box.className = "bg-emerald-50/70 rounded py-0.5";
@@ -1679,81 +1576,43 @@
       const list = document.getElementById('dTacticalList');
       if (!box || !title || !list) return;
 
-      const hasFibraGap = (d.f_acc === true && d.fib.act === 0);
-      const isZeroAll = (d.p.act === 0 && d.mov.act === 0 && d.fib.act === 0 && d.tv.act === 0);
+      const products = [['p', 'Prepago'], ['fib', 'Fibra'], ['mov', 'Contrato']];
+      const items = [];
+      let severity = 0;
+      products.forEach(([key, label]) => {
+        const metrics = d[key];
+        if (key === 'fib' && !d.f_acc && ![metrics.act, metrics.m1, metrics.ly, metrics.proy].some(v => v > 0)) return;
+        const result = evaluateProjection(metrics.proy, metrics.m1, key);
+        const labels = { missing: 'Sin proyección disponible', noBaseline: 'M-1: s/d', zero: 'Proyección y M-1 a cero',
+          new: 'Proyección positiva sin ventas en M-1', fall: 'Caída prevista', watch: 'Seguimiento: previsión inferior',
+          growth: 'Mejora prevista', stable: 'En línea / variación menor' };
+        if (result.state === 'fall') severity = 2;
+        else if (result.state === 'watch') severity = Math.max(severity, 1);
+        const difference = result.diff !== undefined ? ` · ${projectionSummary(result)}` : '';
+        items.push(`<strong>${label}: ${labels[result.state]}.</strong> PROY: ${formatMetric(metrics.proy)} · M-1: ${formatMetric(metrics.m1)}${difference}. ACT: ${formatMetric(metrics.act)}.`);
 
-      // La decisión y el porcentaje se calculan sobre las MISMAS cifras (act vs M-1),
-      // para que el titular no contradiga el criterio.
-      const prepagoDropPct = d.p.m1 >= 6 ? Math.round((1 - (d.p.act / d.p.m1)) * 100) : 0;
-      const prepagoDrop = (d.p.m1 >= 6 && prepagoDropPct >= 40);
-      const highPrepago = (d.p.act >= 18);
+        const yearly = evaluateProjection(metrics.proy, metrics.ly, key);
+        if (['fall', 'watch', 'growth', 'new'].includes(yearly.state)) {
+          if (yearly.state === 'fall') severity = 2;
+          else if (yearly.state === 'watch') severity = Math.max(severity, 1);
+          const yearlyLabel = yearly.state === 'new' ? 'Proyección positiva con LY a cero'
+            : yearly.state === 'growth' ? 'Mejora prevista' : yearly.state === 'fall' ? 'Caída prevista' : 'Seguimiento';
+          items.push(`<strong>${label} vs LY: ${yearlyLabel}.</strong> PROY: ${formatMetric(metrics.proy)} · LY: ${formatMetric(metrics.ly)} · ${projectionSummary(yearly)}.`);
+        }
+      });
 
-      let themeClass = "p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950";
-      let headerText = "🎯 FOCO TÁCTICO PRE-VISITA";
-      let items = [];
-
-      if (d.ff_new && isZeroAll) {
-        themeClass = "p-4 rounded-2xl border bg-purple-50 border-purple-300 text-purple-950 shadow-xs";
-        headerText = `🆕 ALTA RECIENTE (${d.ff}) · ONBOARDING`;
-        items = [
-          `Distribuidor de reciente incorporación aún sin activaciones registradas.`,
-          `<strong>Formación rápida:</strong> Verificar que domina Dealercare y tiene stock inicial de SIMs.`,
-          `<strong>Visibilidad exterior:</strong> Asegurar colocación de banderola/vinilo para atraer primeros clientes.`
-        ];
-      } else if (hasFibraGap) {
-        themeClass = "p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 shadow-xs";
-        headerText = "🚨 ALERTA FIBRA: HABILITADO CON 0 VENTAS";
-        items = [
-          `Punto con <strong>Fibra habilitada en ${escapeHtml(d.h)}</strong> pero lleva <strong>0 activaciones</strong> este mes (en M-1 hizo ${d.fib.m1}).`,
-          `<strong>Auditar PLV:</strong> Revisar cartelería, revistas y vinilos visibles.`,
-          `<strong>Hablar con el Dealer:</strong> Indagar motivos y sugerir tips para ofrecer fibra a sus clientes.`
-        ];
-      } else if (prepagoDrop) {
-        themeClass = "p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs";
-        headerText = `⚠️ CAÍDA FUERTE EN PREPAGO (-${prepagoDropPct}%)`;
-        items = [
-          `Lleva <strong>${d.p.act} SIMs</strong> activadas frente a las <strong>${d.p.m1}</strong> del mes anterior.`,
-          `<strong>Stock físico:</strong> Preguntar por existencias de SIMs.`,
-          `<strong>Presencia de competencia:</strong> Comprobar si otros operadores han dejado cartelería agresiva o mejores incentivos de recarga.`
-        ];
-      } else if (isZeroAll) {
-        themeClass = "p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 shadow-xs";
-        headerText = "⭕ DISTRIBUIDOR INACTIVO (0 ACTIVACIONES)";
-        items = [
-          `Cero activaciones en todos los productos en lo que va de mes.`,
-          `<strong>Verificar acceso a Dealercare:</strong> Ver si hay embargos o algún problema personal.`,
-          `Hablar con el Dealer para proponer un objetivo mensual.`
-        ];
-      } else if (highPrepago) {
-        themeClass = "p-4 rounded-2xl border bg-emerald-50 border-emerald-300 text-emerald-950 shadow-xs";
-        headerText = "🔥 PUNTO MOTOR: ALTO VOLUMEN PREPAGO";
-        items = [
-          `Excelente ritmo con <strong>${d.p.act} SIMs</strong> este mes (Proy: ${d.p.proy}).`,
-          `Asegurar que dispone de suficiente stock para no quebrar inventario a final de mes.`
-        ];
-      } else {
-        themeClass = "p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800 shadow-xs";
-        headerText = "✅ SEGUIMIENTO DE RUTA";
-        items = [
-          `Ritmo estable con ${d.p.act} prepagos, ${d.mov.act} contratos, ${d.fib.act} fibras y ${d.tv.act} TV este mes.`,
-          `Reponer tarjetas SIM y revisar colocación de vinilos y cartelería en mostrador.`
-        ];
+      const isZeroAll = [d.p, d.mov, d.fib, d.tv].every(metrics => metrics.act === 0);
+      if (isZeroAll) {
+        items.push('<strong>Sin activaciones registradas todavía:</strong> comprobar acceso a Dealercare y stock de SIMs. Es un dato acumulado, no una comparación mensual.');
+        if (d.ff_new) items.push(`<strong>Alta reciente (${escapeHtml(d.ff)}):</strong> reforzar formación inicial y visibilidad del punto.`);
+      } else if (d.f_acc && d.fib.act === 0) {
+        items.push('<strong>Fibra pendiente de activar:</strong> habilitada pero todavía sin ventas registradas. Revisar oportunidades, cartelería y argumento comercial.');
       }
-
-      // Aviso adicional si el punto tuvo alto rendimiento el Año Anterior (vs LY) y hoy ha caído
-      const lyAlerts = [];
-      if (d.fib.ly >= 2 && d.fib.act === 0) {
-        lyAlerts.push(`${d.fib.ly} fibras`);
-      }
-      if (d.mov.ly >= 4 && d.mov.act <= 1) {
-        lyAlerts.push(`${d.mov.ly} contratos`);
-      }
-      if (d.p.ly >= 15 && d.p.proy <= d.p.ly * 0.55) {
-        lyAlerts.push(`${d.p.ly} prepagos`);
-      }
-      if (lyAlerts.length > 0) {
-        items.push(`<strong>📊 Potencial Histórico (LY):</strong> El año pasado en este mismo mes hizo <strong>${lyAlerts.join(' y ')}</strong>. Tiene clientela y capacidad demostrada.`);
-      }
+      const themeClass = severity === 2 ? 'p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 shadow-xs'
+        : severity === 1 ? 'p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs'
+        : 'p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800 shadow-xs';
+      const headerText = severity === 2 ? 'Caídas previstas'
+        : severity === 1 ? 'Puntos de seguimiento' : 'Tu visita, en contexto';
 
       box.className = themeClass;
       title.textContent = headerText;
@@ -1797,6 +1656,7 @@
         return `
           <div
             data-dealer-id="${escapeHtml(r.id)}"
+            role="button" tabindex="0" aria-label="Ver ${escapeHtml(r.n)}"
             class="bg-white hover:bg-slate-50 active:bg-blue-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between cursor-pointer transition shadow-2xs"
           >
             <div class="flex items-center gap-2 truncate pr-2">
@@ -1902,12 +1762,19 @@
 
     window.openSettings = function() {
       const m = document.getElementById('settingsModal');
-      if (m) m.classList.remove('hidden');
+      if (m) {
+        settingsReturnFocus = document.activeElement;
+        m.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('settingsPanel').focus();
+      }
     };
 
     window.closeSettings = function() {
       const m = document.getElementById('settingsModal');
       if (m) m.classList.add('hidden');
+      document.body.style.overflow = '';
+      settingsReturnFocus?.focus();
     };
 
     window.exportBackup = function() {
@@ -2031,6 +1898,7 @@
         localStorage.removeItem(STORAGE_KEY_RECENTS);
 
         CURRENT_DEALERS_MAP = {};
+        DEALER_ALIASES.clear();
         activeDealer = null;
         document.getElementById('dealerView').classList.add('hidden');
         document.getElementById('homeView').classList.remove('hidden');
@@ -2049,6 +1917,7 @@
     // --- WHATSAPP SHARE ---
     window.copyWhatsAppReport = function() {
       if (!activeDealer) return;
+      flushPendingNote();
       const d = activeDealer;
       const alias = getDealerAlias(d.id);
       const aliasLine = alias ? `🏷️ Rótulo: *${alias}*
@@ -2062,10 +1931,12 @@ ${aliasLine}📌 ${d.cp} · ${d.z} (${d.m})
 📶 Huella: ${d.h} | Fibra: ${d.f_acc ? 'Habilitada' : 'No'}${d.ff ? ' | Alta: ' + d.ff : ''}
 
 📊 *BALANCE COMERCIAL :*
-• Prepago: Act *${d.p.act}* (Proy: ${d.p.proy} | M-1: ${d.p.m1} | LY: ${d.p.ly})
-• Contrato: Act *${d.mov.act}* (Proy: ${d.mov.proy} | M-1: ${d.mov.m1} | LY: ${d.mov.ly})
-• Fibra: Act *${d.fib.act}* (Proy: ${d.fib.proy} | M-1: ${d.fib.m1} | LY: ${d.fib.ly})
+• Prepago: Act *${formatMetric(d.p.act)}* (Proy: ${formatMetric(d.p.proy)} | M-1: ${formatMetric(d.p.m1)} | LY: ${formatMetric(d.p.ly)})
+• Contrato: Act *${formatMetric(d.mov.act)}* (Proy: ${formatMetric(d.mov.proy)} | M-1: ${formatMetric(d.mov.m1)} | LY: ${formatMetric(d.mov.ly)})
+• Fibra: Act *${formatMetric(d.fib.act)}* (Proy: ${formatMetric(d.fib.proy)} | M-1: ${formatMetric(d.fib.m1)} | LY: ${formatMetric(d.fib.ly)})
 • TV: Act *${d.tv.act}*
+
+Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).
 
 📝 *Nota de visita:*
 "${savedNote}"`;
@@ -2089,7 +1960,8 @@ ${aliasLine}📌 ${d.cp} · ${d.z} (${d.m})
 
     // --- NAVIGATION HELPERS ---
     window.resetSearch = function() {
-      if (activeDealer) saveNote();
+      flushPendingNote();
+      activeDealer = null;
       document.getElementById('dealerView').classList.add('hidden');
       document.getElementById('homeView').classList.remove('hidden');
       window.clearSearchField();
@@ -2113,7 +1985,44 @@ ${aliasLine}📌 ${d.cp} · ${d.z} (${d.m})
 
     // --- PWA: REGISTRO DEL SERVICE WORKER E INSTALACIÓN ---
     let deferredInstallPrompt = null;
+    let swRegistration = null;
+    let reloadForUpdate = false;
     const SW_SUPPORTED = ('serviceWorker' in navigator) && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+
+    function setOfflineStatus(text, state) {
+      const label = document.getElementById('offlineStatus');
+      label.textContent = text;
+      label.dataset.state = state;
+    }
+
+    function updateConnectionStatus() {
+      document.getElementById('connectionStatus').textContent = navigator.onLine
+        ? 'Datos solo en este dispositivo' : 'Sin red · trabajando en local';
+    }
+
+    function checkOfflineStatus() {
+      if (SW_SUPPORTED) navigator.serviceWorker.ready.then(reg => reg.active?.postMessage({ type: 'CHECK_OFFLINE' })).catch(() => {});
+    }
+
+    window.addEventListener('online', () => { updateConnectionStatus(); checkOfflineStatus(); });
+    window.addEventListener('offline', updateConnectionStatus);
+    window.addEventListener('load', () => {
+      updateConnectionStatus();
+      if (!SW_SUPPORTED) setOfflineStatus('Uso offline instalable: abre por HTTPS o localhost', 'error');
+    });
+
+    window.applyAppUpdate = function() {
+      if (!swRegistration?.waiting) return;
+      flushPendingNote();
+      reloadForUpdate = true;
+      swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    };
+
+    function announceUpdate(reg) {
+      if (!reg.waiting) return;
+      document.getElementById('updateAppBtn').classList.remove('hidden');
+      window.showToast('Nueva versión lista. Actualiza cuando termines la visita.');
+    }
 
     function updateInstallButton() {
       const btn = document.getElementById('installAppBtn');
@@ -2157,28 +2066,35 @@ ${aliasLine}📌 ${d.cp} · ${d.z} (${d.m})
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js', { scope: './' })
           .then((reg) => {
-            // Si hay una versión nueva esperando, avisamos y la activamos.
-            if (reg.waiting) {
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-            }
+            swRegistration = reg;
+            announceUpdate(reg);
+            checkOfflineStatus();
             reg.addEventListener('updatefound', () => {
               const sw = reg.installing;
               if (!sw) return;
               sw.addEventListener('statechange', () => {
                 if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-                  window.showToast('🔄 Nueva versión disponible. Reabre la app para aplicarla.');
+                  announceUpdate(reg);
                 }
+                if (sw.state === 'redundant') setOfflineStatus('No se completó la descarga offline. Reabre con conexión.', 'error');
               });
             });
           })
           .catch((err) => {
             console.warn('Service Worker no registrado:', err);
+            setOfflineStatus('No se pudo preparar el uso offline. Reabre con conexión.', 'error');
           });
 
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (window.__swReloading) return;
-          window.__swReloading = true;
-          // No recargamos a la fuerza para no interrumpir una visita en curso.
+          if (reloadForUpdate) location.reload();
+          else checkOfflineStatus();
+        });
+        navigator.serviceWorker.addEventListener('message', event => {
+          if (event.data?.type !== 'OFFLINE_STATUS') return;
+          setOfflineStatus(event.data.ready ? 'Lista para usar sin conexión' : 'Descarga offline incompleta. Reabre con conexión.', event.data.ready ? 'ready' : 'error');
+        });
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') checkOfflineStatus();
         });
       });
     }
