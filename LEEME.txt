@@ -1,5 +1,5 @@
 ============================================================
-  Cartera GPV · Visor Tactico  (v4.6.9)
+  Cartera GPV · Visor Tactico  (v4.6.10)
 ============================================================
 
 Que es
@@ -115,6 +115,9 @@ pertenece a otro comercial antes de sustituir la cartera.
 
 Actualizaciones
 ---------------
+v4.6.10: orden vertical en movil y tablet: datos del distribuidor,
+evolucion de ventas, resumen de ventas y boton de WhatsApp.
+
 v4.6.9: LY ausente muestra "Año anterior- Sin datos" para
 los cuatro productos. LY cero sigue siendo un dato valido.
 
@@ -165,8 +168,8 @@ Uso sin conexion y dispositivos (v4.6.0)
   si falla un archivo no se activa una instalacion incompleta.
 - Una vez listo, puedes abrir y recargar la app, leer otro
   Excel, consultar fichas, copiar resumen y restaurar copias offline.
-- En tablet horizontal se muestran ventas y seguimiento en
-  paralelo; en movil las ventas preceden al resumen de visita.
+- En movil y tablet las secciones se muestran en vertical:
+  datos del distribuidor, ventas, resumen y boton de WhatsApp.
 - Se admite orientacion vertical y horizontal, zoom del navegador,
   navegacion con teclado, foco visible y movimiento reducido.
 - El navegador puede eliminar su almacenamiento por falta de
