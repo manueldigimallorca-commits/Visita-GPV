@@ -3,7 +3,7 @@
  * Cache-first evita esperas de red y mezclar HTML/CSS de versiones distintas.
  */
 
-const VERSION = 'v4.6.11';
+const VERSION = 'v4.6.12';
 const CACHE_STATIC = `cartera-gpv-static-${VERSION}`;
 
 const APP_FILE = './index.html';
@@ -12,8 +12,8 @@ const PRECACHE_URLS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './assets/utilities.css',
-  './assets/app.css',
+  `./assets/utilities.css?v=${VERSION}`,
+  `./assets/app.css?v=${VERSION}`,
   './assets/vendor/xlsx.full.min.js',
   './assets/fonts/public-sans-variable.ttf',
   './icons/icon-192.png',
@@ -27,7 +27,21 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_STATIC);
-      await cache.addAll(PRECACHE_URLS.map(url => new Request(url, { cache: 'reload' })));
+      try {
+        await cache.addAll(PRECACHE_URLS.map(url => new Request(url, { cache: 'reload' })));
+        // Un despliegue parcial o una caché intermedia no deben mezclar versiones.
+        const html = await (await cache.match(APP_FILE)).text();
+        const css = await (await cache.match(`./assets/app.css?v=${VERSION}`)).text();
+        if (!html.includes(`<meta name="app-version" content="${VERSION}">`) ||
+            !html.includes(`./assets/app.css?v=${VERSION}`) ||
+            !html.includes(`./assets/utilities.css?v=${VERSION}`) ||
+            !css.includes(`/* cartera-gpv-style:${VERSION} */`)) {
+          throw new Error('HTML y CSS deben pertenecer a la misma versión que el service worker');
+        }
+      } catch (error) {
+        await caches.delete(CACHE_STATIC);
+        throw error;
+      }
       // Las actualizaciones esperan confirmación para no interrumpir una visita.
       if (!self.registration.active) await self.skipWaiting();
     })()

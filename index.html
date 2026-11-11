@@ -2,6 +2,7 @@
 <html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
+  <meta name="app-version" content="v4.6.12">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cartera GPV | Consulta Pre-Visita</title>
   
@@ -47,8 +48,8 @@
       #settingsPanel { border-radius: 1rem; }
     }
   </style>
-  <link rel="stylesheet" href="./assets/utilities.css">
-  <link rel="stylesheet" href="./assets/app.css">
+  <link rel="stylesheet" href="./assets/utilities.css?v=v4.6.12">
+  <link rel="stylesheet" href="./assets/app.css?v=v4.6.12">
 </head>
 
 <body class="bg-slate-100 text-slate-800 antialiased font-sans min-h-full flex flex-col selection:bg-brand-yellow selection:text-brand-navy">
@@ -649,7 +650,7 @@
       </div>
 
       <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-        <span>Cartera GPV · v4.6.11</span>
+        <span>Cartera GPV · v4.6.12</span>
         <span>Sin datos precargados</span>
       </div>
     </div>
@@ -1783,11 +1784,18 @@ Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).`
       if (SW_SUPPORTED) navigator.serviceWorker.ready.then(reg => reg.active?.postMessage({ type: 'CHECK_OFFLINE' })).catch(() => {});
     }
 
+    function stylesMatchVersion() {
+      const expected = document.querySelector('meta[name="app-version"]').content;
+      const actual = getComputedStyle(document.documentElement).getPropertyValue('--gpv-style-version').trim().replace(/["']/g, '');
+      return actual === expected;
+    }
+
     window.addEventListener('online', () => { updateConnectionStatus(); checkOfflineStatus(); });
     window.addEventListener('offline', updateConnectionStatus);
     window.addEventListener('load', () => {
       updateConnectionStatus();
       if (!SW_SUPPORTED) setOfflineStatus('Uso offline instalable: abre por HTTPS o localhost', 'error');
+      if (!stylesMatchVersion()) setOfflineStatus('Estilos desactualizados. Reabre con conexión y actualiza la aplicación.', 'error');
     });
 
     window.applyAppUpdate = function() {
@@ -1842,7 +1850,7 @@ Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).`
 
     if (SW_SUPPORTED) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
+        navigator.serviceWorker.register('./sw.js', { scope: './', updateViaCache: 'none' })
           .then((reg) => {
             swRegistration = reg;
             announceUpdate(reg);
@@ -1854,7 +1862,7 @@ Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).`
                 if (sw.state === 'installed' && navigator.serviceWorker.controller) {
                   announceUpdate(reg);
                 }
-                if (sw.state === 'redundant') setOfflineStatus('No se completó la descarga offline. Reabre con conexión.', 'error');
+                if (sw.state === 'redundant') setOfflineStatus('Actualización incompleta o archivos de distinta versión. Reabre con conexión.', 'error');
               });
             });
           })
@@ -1869,6 +1877,10 @@ Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).`
         });
         navigator.serviceWorker.addEventListener('message', event => {
           if (event.data?.type !== 'OFFLINE_STATUS') return;
+          if (!stylesMatchVersion()) {
+            setOfflineStatus('Estilos desactualizados. Reabre con conexión y actualiza la aplicación.', 'error');
+            return;
+          }
           setOfflineStatus(event.data.ready ? 'Lista para usar sin conexión' : 'Descarga offline incompleta. Reabre con conexión.', event.data.ready ? 'ready' : 'error');
         });
         document.addEventListener('visibilitychange', () => {

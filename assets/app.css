@@ -1,3 +1,4 @@
+/* cartera-gpv-style:v4.6.12 */
 /* Cartera GPV: una libreta de campo, no un panel de administración. */
 @font-face {
   font-family: 'Public Sans';
@@ -7,6 +8,7 @@
   font-display: swap;
 }
 :root {
+  --gpv-style-version: 'v4.6.12';
   color-scheme: light;
   --ink: #001e4d;
   --blue: #0057b8;
@@ -78,8 +80,23 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
 #emptyState > div:not(:first-child) strong { color: var(--ink); }
 #portfolioStatus { background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 0 0 18px; margin-bottom: 24px; }
 #dbDealersCount { font-size: 1.125rem; font-weight: 750; }
-#dbLastUpdated { margin-top: 5px; font-size: 12px; overflow-wrap: anywhere; }
-#portfolioStatus > div { gap: 16px; }
+#portfolioTotals { margin-top: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.totals-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding: 14px 20px; border-bottom: 1px solid #e7edf5; }
+.totals-heading h3 { color: var(--blue); font-size: 13px; font-weight: 650; }
+.totals-heading > span { color: var(--muted); font-size: 11px; }
+.totals-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 20px 0; margin: 0; }
+.total-product { min-width: 0; padding: 0 20px; }
+.total-product + .total-product { border-left: 1px solid #e0e8f2; }
+.total-product dt { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
+.total-product dt::before { content: ''; width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--product-color); }
+.total-fibra { --product-color: #00a9d6; }
+.total-tv { --product-color: #7c3aed; }
+.total-pospago { --product-color: #0057b8; }
+.total-prepago { --product-color: #d48a00; }
+.total-product dd { margin: 6px 0 0; }
+#portfolioTotals strong { display: block; color: var(--ink); font-size: clamp(24px, 3vw, 32px); line-height: 1.15; font-weight: 700; letter-spacing: -.035em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+#dbLastUpdated { margin-top: 10px; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+#portfolioStatus > .portfolio-heading { gap: 16px; }
 #portfolioStatus button { white-space: nowrap; }
 #searchPanel { padding: 28px; border-color: var(--line); border-radius: 16px; }
 #searchPanel h2 { font-size: clamp(1.375rem, 3vw, 1.75rem); font-weight: 700; letter-spacing: -.04em; }
@@ -94,13 +111,11 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
 #recentsSection h3 { font-size: .8125rem; font-weight: 650; color: var(--ink); }
 #recentsList > div { border-color: var(--line); border-radius: 10px; padding: 12px; }
 #homeView > div:last-child { margin-top: 32px; padding-top: 20px; }
-#dealerView { display: flex; gap: 18px; }
+#dealerView { display: flex; flex-direction: column; gap: 18px; }
 #dealerView > * { margin-top: 0; }
-#dealerView > div:first-child { order: 0; }
-#dealerIdentity { order: 1; }
-#dealerSales { order: 2; }
-#dTacticalAlert { order: 3; }
-#visitNotesPanel { order: 4; }
+#dealerSales { display: flex; flex-direction: column; gap: 12px; }
+#dealerSales > * { margin-top: 0; }
+#dealerSummary { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 #dealerView > div:first-child { background: transparent; border: 0; padding: 0; border-radius: 0; gap: 12px; }
 #dealerView > div:first-child button { padding-left: 0; background: transparent; font-size: 13px; }
 #dIdBadge { background: transparent; color: var(--muted); font-weight: 600; padding-right: 0; }
@@ -108,9 +123,6 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
 #dName { font-size: clamp(1.375rem, 3vw, 2rem); line-height: 1.22; font-weight: 700; letter-spacing: -.035em; overflow-wrap: anywhere; }
 #dLocation { font-size: 13px; color: var(--muted); }
 #dealerIdentity .uppercase { font-size: 11px; padding: 5px 8px; border-radius: 5px; }
-#editAliasBtn { font-size: 12px; background: transparent; padding-left: 0; }
-#aliasEditorBox { flex-wrap: wrap; }
-#aliasInput { min-width: 0; min-height: 46px; font-size: 16px; width: 100%; }
 #dAliasText { overflow-wrap: anywhere; }
 #dTacticalAlert { border-radius: 12px; padding: 20px; border-width: 1px; box-shadow: none; }
 #dTacticalTitle { font-size: 14px; line-height: 1.4; letter-spacing: -.01em; font-weight: 700; }
@@ -119,30 +131,34 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
 #dTacticalList li:first-child { padding-top: 0; border-top: 0; }
 #dTacticalList li:last-child { padding-bottom: 0; }
 #dTacticalList strong { display: block; font-weight: 650; margin-bottom: 3px; }
+#dTacticalList p { margin: 5px 0 0; }
+#dTacticalList .comparison-label { color: var(--muted); }
 #dealerSales > div:first-child { align-items: baseline; flex-wrap: wrap; gap: 6px 12px; padding: 0 2px; }
 #dealerSales h3 { color: var(--ink); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
 #dealerSales > .bg-white { padding: 18px; border-radius: 12px; border-color: var(--line); box-shadow: none; }
 #dealerSales > .bg-white > div:first-child { gap: 10px; }
 #dealerSales > .bg-white > div:first-child > div:last-child { flex-wrap: wrap; gap: 6px; }
 #dealerSales span[id$='Badge'] { font-size: 11px; line-height: 1.5; }
-#dealerSales .grid { border: 0; background: transparent; padding: 0; gap: 0; margin-top: 12px; font-variant-numeric: tabular-nums; }
-#dealerSales .grid > div { padding: 12px 2px; border-radius: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
-#dealerSales .grid > div + div { border-left: 1px solid #e2eaf3; }
+#dealerSales .grid { border: 0; background: transparent; padding: 0; gap: 3px; margin-top: 12px; font-variant-numeric: tabular-nums; }
+#dealerSales .grid > div { padding: 12px 2px; border: 0; border-radius: 7px; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; }
 #dealerSales .grid > div > span:first-child { font-size: 10px; line-height: 1.4; letter-spacing: .015em; color: var(--muted); font-weight: 600; }
 #dealerSales .grid > div > span:last-child { font-size: clamp(.8125rem, 2.5vw, 1.125rem); line-height: 1.6; font-weight: 650; color: var(--ink); overflow-wrap: anywhere; max-width: 100%; }
-#dealerSales .grid > div:nth-child(5) { background: #fff4bf; border: 0; border-radius: 7px; }
-#dealerSales .grid > div:nth-child(5) > span { color: #574200; }
+#dealerSales .grid > .projection-cell { background: #fff4bf; border: 0; border-radius: 7px; }
+#dealerSales .grid > .projection-cell > span { color: #574200; }
+/* El color identifica el periodo, no el rendimiento del producto. */
+#dealerSales .grid > .actual-cell { background: #dce8fa; }
+#dealerSales .grid > .actual-cell > span:first-child { color: #244a7c; }
+#dealerSales .grid > .history-m1 { background: #e4f4fb; }
+#dealerSales .grid > .history-m2 { background: #eee8fa; }
+#dealerSales .grid > .history-m3 { background: #e4f2e9; }
+#dealerSales .grid > .yearly-cell { background: #fbe9df; }
+#dealerSales .grid > .yearly-cell > span:first-child { color: #734b35; }
 .trend-help { font-size: 12px; color: var(--muted); padding: 0 2px; }
 .trend-help summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 8px; color: var(--blue); }
 .trend-help summary::before { content: '+'; font-size: 18px; }
 .trend-help[open] summary::before { content: '−'; }
 .trend-help p { margin-bottom: 12px; line-height: 1.7; max-width: 70ch; }
-#visitNotesPanel { padding: 22px; border-radius: 12px; border-color: var(--line); }
-#visitNotesPanel label { font-size: 15px; font-weight: 700; }
-#visitNotesPanel > .flex.flex-wrap { gap: 8px; }
-#visitNotesPanel > .flex.flex-wrap button { font-size: 12px; padding: 8px 10px; border-radius: 7px; font-weight: 500; }
-#visitNotes { font-size: 16px; min-height: 140px; line-height: 1.65; border-radius: 8px; border-color: #becddd; resize: vertical; }
-#visitNotesPanel > button:last-child { background: #087f5b; border-radius: 8px; font-size: 13px; min-height: 48px; }
+#dealerShare > button { background: #087f5b; border-radius: 8px; font-size: 13px; min-height: 48px; }
 #toast { top: auto; bottom: max(24px, env(safe-area-inset-bottom)); max-width: min(560px, calc(100% - 32px)); z-index: 90; transform: none; }
 #toast > div { border-radius: 10px; padding: 14px 18px; font-size: 13px; line-height: 1.5; box-shadow: 0 6px 24px #001e4d24; }
 #settingsModal { padding: 12px max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left)); }
@@ -156,9 +172,6 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
 @media (min-width: 640px) {
   .welcome-panel { grid-template-columns: 1.1fr 1fr; }
   .welcome-intro { padding: 44px; }
-  #dealerSales { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; }
-  #dealerSales > * { margin-top: 0; }
-  #dealerSales > div:first-child, #dealerSales > details { grid-column: 1 / -1; }
   #settingsModal { padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); align-items: center; }
   #settingsPanel { border-radius: 18px; }
 }
@@ -168,14 +181,6 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
   #portfolioStatus { grid-column: 1 / -1; }
   #recentsSection { margin-top: 0; }
   #recentsSection > div:first-child { min-height: 44px; padding: 0; margin: 0 0 10px; }
-}
-@media (min-width: 900px) {
-  #dealerView { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); grid-template-areas: 'nav nav' 'identity identity' 'sales focus' 'sales notes'; gap: 22px; align-items: start; }
-  #dealerView > div:first-child { grid-area: nav; }
-  #dealerIdentity { grid-area: identity; }
-  #dealerSales { grid-area: sales; display: flex; flex-direction: column; gap: 14px; }
-  #dTacticalAlert { grid-area: focus; }
-  #visitNotesPanel { grid-area: notes; }
 }
 @media (max-width: 599px) {
   .app-header > div { padding-inline: 16px; min-height: 68px; gap: 8px; }
@@ -193,13 +198,21 @@ input:focus-visible, textarea:focus-visible { outline-offset: 2px; }
   .welcome-intro h2 { max-width: 14ch; }
   .welcome-upload { padding: 26px; }
   .welcome-capabilities { gap: 8px 12px; font-size: 11px; }
-  #portfolioStatus > div { flex-wrap: wrap; gap: 6px 12px; }
+  #portfolioStatus > .portfolio-heading { flex-wrap: wrap; gap: 6px 12px; }
   #searchPanel { padding: 22px 18px; }
   #searchPanel > p { font-size: 13px; }
   #dealerIdentity { padding: 20px 16px; }
   #dealerSales > .bg-white { padding: 16px 12px; }
-  #dTacticalAlert, #visitNotesPanel { padding: 18px 16px; }
+  #dTacticalAlert { padding: 18px 16px; }
   #dealerSales .grid > div > span:last-child { font-size: 15px; }
+}
+@media (max-width: 479px) {
+  .totals-heading { padding: 14px 16px; }
+  .totals-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+  .total-product { padding: 16px; }
+  .total-product:nth-child(3) { border-left: 0; }
+  .total-product:nth-child(n+3) { border-top: 1px solid #e0e8f2; }
+  #portfolioTotals strong { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
