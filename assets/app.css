@@ -1,4 +1,4 @@
-/* cartera-gpv-style:v4.6.12 */
+/* cartera-gpv-style:v4.6.13 */
 /* Cartera GPV: una libreta de campo, no un panel de administración. */
 @font-face {
   font-family: 'Public Sans';
@@ -8,7 +8,7 @@
   font-display: swap;
 }
 :root {
-  --gpv-style-version: 'v4.6.12';
+  --gpv-style-version: 'v4.6.13';
   color-scheme: light;
   --ink: #001e4d;
   --blue: #0057b8;

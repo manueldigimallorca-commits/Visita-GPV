@@ -2,7 +2,7 @@
 <html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="app-version" content="v4.6.12">
+  <meta name="app-version" content="v4.6.13">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cartera GPV | Consulta Pre-Visita</title>
   
@@ -48,8 +48,8 @@
       #settingsPanel { border-radius: 1rem; }
     }
   </style>
-  <link rel="stylesheet" href="./assets/utilities.css?v=v4.6.12">
-  <link rel="stylesheet" href="./assets/app.css?v=v4.6.12">
+  <link rel="stylesheet" href="./assets/utilities.css?v=v4.6.13">
+  <link rel="stylesheet" href="./assets/app.css?v=v4.6.13">
 </head>
 
 <body class="bg-slate-100 text-slate-800 antialiased font-sans min-h-full flex flex-col selection:bg-brand-yellow selection:text-brand-navy">
@@ -650,7 +650,7 @@
       </div>
 
       <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-        <span>Cartera GPV · v4.6.12</span>
+        <span>Cartera GPV · v4.6.13</span>
         <span>Sin datos precargados</span>
       </div>
     </div>
@@ -1433,6 +1433,11 @@
     function salesComparisonText(proy, baseline, product, yearly = false) {
       if (yearly && (typeof baseline !== 'number' || !Number.isFinite(baseline) || baseline < 0)) return 'Sin datos';
       const state = evaluateProjection(proy, baseline, product).state;
+      if (yearly && state === 'new') {
+        return proy >= (TREND_RULES.minStrongChange[product] || 2)
+          ? 'Las ventas previstas mejoran claramente'
+          : 'Las ventas previstas mejoran ligeramente';
+      }
       const labels = {
         missing: 'Sin proyección disponible',
         noBaseline: yearly ? 'Sin datos' : 'Histórico insuficiente',
