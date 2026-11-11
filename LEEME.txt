@@ -1,11 +1,11 @@
 ============================================================
-  Cartera GPV · Visor Tactico  (v4.4.1)
+  Cartera GPV · Visor Tactico  (v4.6.5)
 ============================================================
 
 Que es
 -------
 App para consultar la cartera de distribuidores antes de una
-visita: datos de ventas, alertas tacticas, notas y rotulos.
+visita: datos de ventas, previsiones y alertas tacticas.
 
 NO trae distribuidores precargados. Cada comercial carga su
 propio Excel la primera vez.
@@ -16,10 +16,11 @@ Contenido del paquete
   manifest.webmanifest    Configuracion de la app instalable
   sw.js                   Cache para funcionar sin cobertura
   icons\                  Iconos de la app
+  assets\                 CSS, tipografia y lector Excel locales
   LEEME.txt               Este archivo
 
-IMPORTANTE: la carpeta "icons" debe quedarse junto a
-index.html y conservar ese nombre. No la renombres ni la muevas.
+IMPORTANTE: "icons" y "assets" deben quedarse junto a
+index.html y conservar sus nombres y subcarpetas.
 
 
 Como usarla
@@ -27,13 +28,14 @@ Como usarla
 OPCION A - Con enlace web (recomendado)
   1. Sube el contenido de esta carpeta a un hosting con HTTPS.
   2. Abre el enlace en el movil.
-  3. Menu del navegador -> "Anadir a pantalla de inicio".
+  3. Espera el indicador "Lista para usar sin conexion".
+  4. Menu del navegador -> "Anadir a pantalla de inicio".
   No hay que enviar archivos a nadie: basta con el enlace.
 
 OPCION B - Sin hosting
   Los service workers solo funcionan en HTTPS o localhost.
   Si abres index.html con doble clic (file://), la app se ve,
-  pero NO se instala ni guarda nada para uso sin cobertura.
+   pero NO se instala ni prepara la cache de uso sin cobertura.
   Para probarla en local hace falta un servidor, por ejemplo:
       python -m http.server 8000
   y abrir http://localhost:8000
@@ -41,7 +43,7 @@ OPCION B - Sin hosting
 
 Primer uso
 ----------
-  1. Abre la app: veras la pantalla "Carga tu cartera".
+  1. Abre la app: veras la pantalla "Tu cartera, lista para la visita".
   2. Pulsa "Cargar mi Excel" y elige tu archivo CDM Movil (.xlsx).
   3. Cuando termine, el buscador se activa con tu cartera.
   4. Puedes reemplazar el Excel cuando quieras desde el boton
@@ -57,7 +59,7 @@ letras y numeros sin cambiar ningun modo.
 
 Tus datos
 ---------
-- La cartera, las notas y los rotulos se guardan SOLO en este
+- La cartera y los datos antiguos se guardan SOLO en este
   dispositivo y en este navegador. No se envia nada a ningun
   servidor.
 - Si cambias de movil o borras los datos del navegador, se pierde
@@ -65,6 +67,41 @@ Tus datos
   y guarda el archivo .json.
 - Para recuperarlo: Ajustes -> "Importar copia de seguridad".
 - Ajustes -> "Borrar todos los datos" deja el dispositivo limpio.
+
+
+Resumen de ventas (v4.6.5)
+---------------------------
+- Un unico resumen: Fibra Smart, TV, Pospago y Prepago.
+  Dos lineas por producto: PROY frente a la media de M-1, M-2
+  y M-3; y PROY frente a LY. ACT no interviene en las comparativas.
+- PROY es la estimacion del Excel; la app no la recalcula con
+  el dia del movil ni la considera un cierre real.
+- No se muestran porcentajes ni etiquetas de tendencia repetidas.
+  Criterios internos simetricos para subidas y bajadas:
+  similares hasta el 10 % o por debajo del minimo de unidades;
+  variacion ligera por encima del 10 %; clara desde el 30 %
+  si alcanza tambien el minimo de unidades de variacion fuerte.
+  Fibra, TV y Pospago: minimo 1 unidad, fuerte desde 2.
+  Prepago: minimo 2 unidades, fuerte desde 3.
+- Se necesitan los tres meses validos para calcular la media.
+  Si falta alguno: Historico insuficiente. LY ausente: s/d.
+  TV no dispone de LY en la estructura actual del Excel.
+- Referencia cero y PROY positiva: ventas previstas frente a
+  una referencia sin ventas. Ambos a cero: ventas similares.
+- Una PROY vacia o invalida se muestra como s/d y no genera
+  alertas de caida. Un cero numerico si es una proyeccion valida.
+- Al actualizar desde versiones anteriores, vuelve a cargar
+  el Excel: los ceros antiguos no se pueden distinguir de
+  antiguas celdas vacias y se tratan de forma conservadora.
+- Recarga el Excel si la app avisa de ceros historicos antiguos:
+  versiones anteriores confundian datos ausentes con ceros.
+- Siempre se muestran los cuatro productos en el resumen.
+- Las ubicaciones ausentes se muestran como s/d.
+- "Importado" indica cuando se cargo el archivo, no la fecha
+  de corte de sus ventas.
+- Un ID duplicado o la ausencia de columnas comerciales
+  necesarias impide importar el archivo y conserva la cartera.
+- Pruebas automatizadas: node --test tests/app.test.cjs
 
 
 Varios comerciales
@@ -77,15 +114,63 @@ pertenece a otro comercial antes de sustituir la cartera.
 
 Actualizaciones
 ---------------
+v4.6.5: resumen unico cualitativo frente a media trimestral y LY,
+sin porcentajes ni alertas duplicadas. Historico ausente es s/d.
+
+v4.6.4: la pantalla principal muestra los totales ACT de toda
+la cartera: Fibra, TV, Pospago y Prepago, bajo el numero de
+distribuidores. Si falta un ACT, el total de ese producto es s/d.
+
+v4.6.3: se retiran las notas, etiquetas rapidas y editores de
+notas y rotulos. El resumen para WhatsApp solo incluye ventas
+y datos del distribuidor. Los datos antiguos se conservan en
+el dispositivo y en las copias para evitar perder informacion.
+
+v4.6.2: historico con colores suaves comunes a los cuatro productos:
+M-1 azul, M-2 lavanda y M-3 verde agua. PROY conserva el amarillo.
+
+v4.6.1: ventas en orden Fibra Smart, TV, Movil pospago y Prepago.
+Columnas: ACT, PROY, M-1, M-2, M-3 y LY, con PROY resaltada.
+TV muestra s/d en LY al no disponer de ese dato en el Excel.
+
 Sustituye los archivos por los nuevos manteniendo la estructura.
-La cartera y las notas guardadas se conservan. Si la app avisa
-de una "nueva version disponible", cierrala y vuelve a abrirla.
+La cartera y las notas guardadas se conservan. Cuando aparezca
+"Actualizar aplicacion", pulsalo al terminar la visita: se
+recarga la nueva version. No se interrumpe
+una visita automaticamente. Al cambiar archivos del paquete,
+incrementa VERSION en sw.js para distribuir la nueva cache.
+
+
+Uso sin conexion y dispositivos (v4.6.0)
+--------------------------------------
+- No hay dependencias CDN: CSS compilado, fuente Public Sans y
+  SheetJS 0.20.3 se incluyen en assets. No hay peticiones a terceros.
+- Abre una vez con conexion por HTTPS o localhost y espera
+  "Lista para usar sin conexion" antes de salir sin cobertura.
+- Se verifica el paquete completo antes de anunciarlo listo;
+  si falla un archivo no se activa una instalacion incompleta.
+- Una vez listo, puedes abrir y recargar la app, leer otro
+  Excel, consultar fichas, copiar resumen y restaurar copias offline.
+- En tablet horizontal se muestran ventas y seguimiento en
+  paralelo; en movil las ventas preceden al resumen de visita.
+- Se admite orientacion vertical y horizontal, zoom del navegador,
+  navegacion con teclado, foco visible y movimiento reducido.
+- El navegador puede eliminar su almacenamiento por falta de
+  espacio, limpieza manual o politicas de modo privado. Ninguna
+  web puede garantizar conservarlo para siempre: exporta copias.
+- El indicador de red refleja el estado que informa el navegador;
+  no realiza conexiones de prueba ni envia informacion comercial.
+- Solo hacen falta index.html, sw.js, manifest.webmanifest,
+  icons y assets para desplegar. tests, tools y styles son de desarrollo.
+- Prueba de navegador: node tests/browser.cjs (requiere Playwright;
+  Edge por defecto, BROWSER_CHANNEL permite elegir otro canal).
+- Para reconstruir el CSS: instrucciones en assets/README.txt.
 
 
 Problemas frecuentes
 --------------------
-- "Falta el lector de Excel": la primera vez necesita internet
-  para descargar la libreria. Despues queda guardada.
+- Si falta el lector Excel, comprueba que subiste la carpeta
+  assets completa y reabre la app con conexion.
 - No aparece "Instalar": entra por HTTPS, no por file://.
 - No veo mi cartera en otro navegador: los datos no se comparten
   entre navegadores; exporta e importa la copia de seguridad.

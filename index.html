@@ -140,9 +140,9 @@
         </div>
         <h2 class="text-base font-black text-brand-navy tracking-tight">Tu cartera, lista para la visita.</h2>
         <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-          Menos tiempo buscando en el Excel. Ventas, oportunidades y notas de cada distribuidor, a mano cuando llegas a su tienda.
+          Menos tiempo buscando en el Excel. Ventas y oportunidades de cada distribuidor, a mano cuando llegas a su tienda.
         </p>
-        <div class="welcome-capabilities"><span>Ventas y previsiones</span><span>Notas de visita</span><span>Consulta sin cobertura</span></div>
+        <div class="welcome-capabilities"><span>Ventas y previsiones</span><span>Consulta sin cobertura</span></div>
         </div>
         <div class="welcome-upload">
         <h3>Empieza con tu Excel</h3>
@@ -162,7 +162,7 @@
       </div>
 
       <div class="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-blue-900 leading-relaxed">
-        <strong>🔒 Tus datos son tuyos:</strong> la cartera y las notas de visita se guardan solo en este dispositivo.
+        <strong>🔒 Tus datos son tuyos:</strong> la cartera se guarda solo en este dispositivo.
         Nada se envía a ningún servidor.
       </div>
 
@@ -183,6 +183,13 @@
           <div>
             <div class="text-xs font-bold text-slate-900">
               <span id="dbDealersCount">0</span> <span id="dbDealersLabel">distribuidores en tu cartera</span>
+            </div>
+            <div id="portfolioTotals" aria-label="Ventas actuales totales de la cartera" role="status">
+              <span class="totals-label">ACT</span>
+              <span>Fibra <strong id="totalFibraAct">s/d</strong></span>
+              <span>TV <strong id="totalTvAct">s/d</strong></span>
+              <span>Pospago <strong id="totalPospagoAct">s/d</strong></span>
+              <span>Prepago <strong id="totalPrepagoAct">s/d</strong></span>
             </div>
             <div id="dbLastUpdated" class="text-[10px] text-slate-500 font-medium">Base inicial cargada</div>
           </div>
@@ -333,33 +340,8 @@
               <span>🏪</span>
               <span id="dAliasText"></span>
             </span>
-            <button 
-              type="button" 
-              id="editAliasBtn" 
-              onclick="window.toggleAliasEditor()" 
-              class="text-[11px] font-bold text-brand-blue hover:text-brand-navy bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-md transition"
-            >
-              + Añadir nombre comercial / calle
-            </button>
           </div>
 
-          <!-- Editor Inline de Alias -->
-          <div id="aliasEditorBox" class="hidden mt-2 flex items-center gap-1.5">
-            <input 
-              type="text" 
-              id="aliasInput" 
-              aria-label="Nombre comercial o dirección"
-              placeholder="Ej: Locutorio Baraka - C/ Manacor 42" 
-              class="flex-1 text-xs font-semibold px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg focus:bg-white focus:outline-none focus:border-brand-blue"
-            >
-            <button 
-              type="button" 
-              onclick="window.saveDealerAlias()" 
-              class="text-xs font-bold bg-brand-navy text-brand-yellow px-3 py-1.5 rounded-lg"
-            >
-              Guardar
-            </button>
-          </div>
         </div>
 
         <p class="text-xs text-slate-500 font-medium mt-2 flex items-center gap-1">
@@ -393,65 +375,16 @@
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">
           Evolución de ventas
         </h3>
-        <span class="text-[10px] text-slate-400 font-semibold">M-3 ➔ M-2 ➔ M-1 ➔ ACT ➔ Proy | LY</span>
+        <span class="text-[10px] text-slate-400 font-semibold">ACT → PROY → M-1 → M-2 → M-3 → LY</span>
       </div>
-      <details class="trend-help"><summary>Cómo interpretar las previsiones</summary><p>Comparamos PROY con M-1 y LY, no el mes actual incompleto. Seguimiento por debajo de −10 %; alerta desde −30 %, con pérdida mínima de 3 unidades en prepago o 2 en fibra/contrato. PROY es una estimación del Excel, no un cierre real.</p><p>M-3, M-2 y M-1: meses anteriores. ACT: ventas acumuladas. LY: mismo mes del año anterior. s/d: dato no disponible.</p></details>
+      <details class="trend-help"><summary>Cómo interpretar las previsiones</summary><p>El resumen compara PROY con la media de M-1, M-2 y M-3 y, por separado, con LY. Las diferencias pequeñas se consideran similares; distinguimos variaciones ligeras y claras teniendo en cuenta también las unidades. Si falta algún mes, no calculamos una media incompleta.</p><p>ACT: ventas acumuladas del mes. PROY: estimación del Excel, no un cierre real. M-1, M-2 y M-3: meses anteriores. LY: mismo mes del año anterior. s/d: dato no disponible.</p></details>
 
-      <!-- 1. PREPAGO -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
-        <div class="flex flex-wrap gap-2 items-center justify-between mb-2">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-            <span class="text-xs font-black text-slate-900">Prepago</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <span id="lyPrepagoBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
-            <span id="trendPrepagoBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">
-              Tendencia
-            </span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
-            <span id="pre_m3" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
-            <span id="pre_m2" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
-            <span id="pre_m1" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div class="bg-amber-100/70 rounded py-0.5">
-            <span class="block text-[9px] text-amber-900 font-black uppercase">ACT</span>
-            <span id="pre_act" class="text-xs font-black text-amber-950">0</span>
-          </div>
-          <div class="bg-amber-50 rounded py-0.5">
-            <span class="block text-[9px] text-amber-800 font-bold uppercase">PROY</span>
-            <span id="pre_proy" class="text-xs font-black text-amber-900">0</span>
-          </div>
-          <div id="pre_ly_box" class="rounded py-0.5">
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
-            <span id="pre_ly" class="text-xs font-bold text-slate-500">0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. FIBRA SMART (Se compacta automáticamente si no tiene acceso ni ventas) -->
+      <!-- 1. FIBRA SMART (Se compacta automáticamente si no tiene acceso ni ventas) -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
         <div class="flex flex-wrap gap-2 items-center justify-between mb-1.5">
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
             <span class="text-xs font-black text-slate-900">Fibra Smart</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <span id="lyFibraBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
-            <span id="trendFibraBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900">
-              Tendencia
-            </span>
           </div>
         </div>
 
@@ -462,25 +395,25 @@
 
         <!-- Tabla 6 columnas si tiene acceso o histórico -->
         <div id="fibraGrid" class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
-            <span id="fib_m3" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
-            <span id="fib_m2" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
-            <span id="fib_m1" class="text-xs font-bold text-slate-700">0</span>
-          </div>
           <div class="bg-sky-100/70 rounded py-0.5">
             <span class="block text-[9px] text-sky-900 font-black uppercase">ACT</span>
             <span id="fib_act" class="text-xs font-black text-sky-950">0</span>
           </div>
-          <div class="bg-sky-50 rounded py-0.5">
+          <div class="projection-cell bg-sky-50 rounded py-0.5">
             <span class="block text-[9px] text-sky-800 font-bold uppercase">PROY</span>
             <span id="fib_proy" class="text-xs font-black text-sky-900">0</span>
+          </div>
+          <div class="history-cell history-m1">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="fib_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m2">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="fib_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m3">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="fib_m3" class="text-xs font-bold text-slate-700">0</span>
           </div>
           <div id="fib_ly_box" class="rounded py-0.5">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
@@ -489,41 +422,72 @@
         </div>
       </div>
 
-      <!-- 3. MÓVIL CONTRATO -->
+      <!-- 2. TV (Se oculta automáticamente cuando no aplica para evitar scroll) -->
+      <div id="cardTv" class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
+            <span class="text-xs font-black text-slate-900">TV</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-violet-50 text-violet-800">Servicio TV</span>
+        </div>
+        <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">ACT</span>
+            <span id="tv_act" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="projection-cell">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">PROY</span>
+            <span id="tv_proy" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m1">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="tv_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m2">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="tv_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m3">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="tv_m3" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
+            <span id="tv_ly" class="text-xs font-bold text-slate-500">s/d</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MÓVIL POSPAGO -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
         <div class="flex flex-wrap gap-2 items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-brand-blue"></span>
-            <span class="text-xs font-black text-slate-900">Móvil contrato</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <span id="lyMovilBadge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded"></span>
-            <span id="trendMovilBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-              Tendencia
-            </span>
+            <span class="text-xs font-black text-slate-900">Móvil pospago</span>
           </div>
         </div>
 
         <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
-            <span id="mov_m3" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
-            <span id="mov_m2" class="text-xs font-bold text-slate-700">0</span>
-          </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
-            <span id="mov_m1" class="text-xs font-bold text-slate-700">0</span>
-          </div>
           <div class="bg-indigo-100/70 rounded py-0.5">
             <span class="block text-[9px] text-indigo-900 font-black uppercase">ACT</span>
             <span id="mov_act" class="text-xs font-black text-indigo-950">0</span>
           </div>
-          <div class="bg-indigo-50 rounded py-0.5">
+          <div class="projection-cell bg-indigo-50 rounded py-0.5">
             <span class="block text-[9px] text-indigo-800 font-bold uppercase">PROY</span>
             <span id="mov_proy" class="text-xs font-black text-indigo-900">0</span>
+          </div>
+          <div class="history-cell history-m1">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
+            <span id="mov_m1" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m2">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="mov_m2" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div class="history-cell history-m3">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="mov_m3" class="text-xs font-bold text-slate-700">0</span>
           </div>
           <div id="mov_ly_box" class="rounded py-0.5">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
@@ -532,91 +496,54 @@
         </div>
       </div>
 
-      <!-- 4. TV (Se oculta automáticamente cuando no aplica para evitar scroll) -->
-      <div id="cardTv" class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
-        <div class="flex items-center justify-between mb-2">
+      <!-- 4. PREPAGO -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3">
+        <div class="flex flex-wrap gap-2 items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
-            <span class="text-xs font-black text-slate-900">TV</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span class="text-xs font-black text-slate-900">Prepago</span>
           </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-violet-50 text-violet-800">
-            Servicio TV
-          </span>
         </div>
 
-        <div class="grid grid-cols-5 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+        <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
           <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
-            <span id="tv_m3" class="text-xs font-bold text-slate-700">0</span>
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">ACT</span>
+            <span id="pre_act" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div>
-            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
-            <span id="tv_m2" class="text-xs font-bold text-slate-700">0</span>
+          <div class="projection-cell">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">PROY</span>
+            <span id="pre_proy" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div>
+          <div class="history-cell history-m1">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">M-1</span>
-            <span id="tv_m1" class="text-xs font-bold text-slate-700">0</span>
+            <span id="pre_m1" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div class="bg-purple-100/70 rounded py-0.5">
-            <span class="block text-[9px] text-purple-900 font-black uppercase">ACT</span>
-            <span id="tv_act" class="text-xs font-black text-purple-950">0</span>
+          <div class="history-cell history-m2">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-2</span>
+            <span id="pre_m2" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div class="bg-purple-50 rounded py-0.5">
-            <span class="block text-[9px] text-purple-800 font-bold uppercase">PROY</span>
-            <span id="tv_proy" class="text-xs font-black text-purple-900">0</span>
+          <div class="history-cell history-m3">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
+            <span id="pre_m3" class="text-xs font-bold text-slate-700">0</span>
+          </div>
+          <div id="pre_ly_box" class="rounded py-0.5">
+            <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
+            <span id="pre_ly" class="text-xs font-bold text-slate-500">0</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Foco de visita: después de las ventas en móvil, a su lado en tablet. -->
-    <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs">
+    <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800">
       <div class="font-black text-xs tracking-tight flex items-center gap-1.5 mb-2">
-        <span id="dTacticalTitle">Tu visita, en contexto</span>
+        <span id="dTacticalTitle">Resumen de ventas</span>
       </div>
       <ul id="dTacticalList" class="text-xs leading-relaxed"><!-- Contenido generado con las proyecciones. --></ul>
     </div>
 
-    <!-- VISIT NOTES (Con Botones Rápidos 1-Toque) & WHATSAPP REPORT -->
-    <div id="visitNotesPanel" class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
-          <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-          </svg>
-          <label for="visitNotes">Notas de la visita</label>
-        </div>
-        <span id="notesSavedAlert" class="text-[10px] text-emerald-600 font-bold hidden">Guardado ✓</span>
-      </div>
-
-      <!-- Botones Rápidos 1-Toque -->
-      <div class="flex flex-wrap gap-1.5">
-        <button type="button" onclick="window.appendQuickNote('Dejadas SIMs de reposición.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-brand-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
-          + Stock SIMs
-        </button>
-        <button type="button" onclick="window.appendQuickNote('PLV y cartelería revisados en mostrador.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-brand-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
-          + PLV colocado
-        </button>
-        <button type="button" onclick="window.appendQuickNote('Reforzado argumento comercial Fibra SMART.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-brand-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
-          + Push Fibra
-        </button>
-        <button type="button" onclick="window.appendQuickNote('Visita seguimiento OK, sin incidencias.')" class="text-[10px] font-bold bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-brand-blue border border-slate-200 px-2 py-1 rounded-lg active:scale-95 transition">
-          + Sin incidencias
-        </button>
-        <button type="button" onclick="window.appendQuickNote('Local cerrado en horario de visita.')" class="text-[10px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 px-2 py-1 rounded-lg active:scale-95 transition">
-          + Cerrado
-        </button>
-      </div>
-
-      <textarea 
-        id="visitNotes" 
-        aria-label="Notas de la visita"
-        rows="2" 
-        oninput="window.handleNoteInput()" 
-        placeholder="Toca las etiquetas de arriba o escribe tus notas..."
-        class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 transition"
-      ></textarea>
-
+    <!-- Resumen de ventas, sin campos de edición. -->
+    <div id="dealerShare">
       <!-- Quick Action: Share to WhatsApp -->
       <button 
         onclick="window.copyWhatsAppReport()" 
@@ -660,7 +587,7 @@
         >
           <span>
             <span class="block text-xs font-bold text-slate-900">Exportar copia de seguridad</span>
-            <span class="block text-[10px] text-slate-500">Cartera + notas + rótulos (.json)</span>
+            <span class="block text-[10px] text-slate-500">Cartera y datos antiguos guardados (.json)</span>
           </span>
           <span class="text-brand-blue font-black text-base">⬇</span>
         </button>
@@ -684,7 +611,7 @@
         >
           <span>
             <span class="block text-xs font-bold text-slate-900">Cargar / cambiar Excel</span>
-            <span class="block text-[10px] text-slate-500">Sustituye la cartera, conserva tus notas</span>
+            <span class="block text-[10px] text-slate-500">Sustituye la cartera desde tu Excel</span>
           </span>
           <span class="text-emerald-600 font-black text-base">📄</span>
         </button>
@@ -717,7 +644,7 @@
       </div>
 
       <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-        <span>Cartera GPV · v4.6.0</span>
+        <span>Cartera GPV · v4.6.5</span>
         <span>Sin datos precargados</span>
       </div>
     </div>
@@ -736,7 +663,6 @@
     // APPLICATION STATE
     let CURRENT_DEALERS_MAP = {};
     let activeDealer = null;
-    let noteDebounceTimer = null;
     const DEALER_ALIASES = new Map();
     let settingsReturnFocus = null;
 
@@ -817,6 +743,20 @@
               });
               if (needsReload) window.showToast('Recarga tu Excel para validar las proyecciones cero de la versión anterior.');
             }
+            if (meta.historySchema !== 1) {
+              let needsReload = false;
+              Object.values(CURRENT_DEALERS_MAP).forEach(dealer => {
+                ['fib', 'tv', 'mov', 'p'].forEach(product => {
+                  ['m1', 'm2', 'm3', 'ly'].forEach(period => {
+                    if (dealer[product]?.[period] === 0) {
+                      dealer[product][period] = null;
+                      needsReload = true;
+                    }
+                  });
+                });
+              });
+              if (needsReload) window.showToast('Recarga tu Excel para validar los ceros del histórico antiguo.');
+            }
             updateStatusUI(Object.keys(CURRENT_DEALERS_MAP).length, meta.lastUpdated || '--', meta.fileName || 'Excel cargado', meta);
             applyStateUI(true);
             return;
@@ -844,7 +784,22 @@
       }
     }
 
+    function calculatePortfolioTotals(dealers) {
+      const rows = Object.values(dealers);
+      return Object.fromEntries(['fib', 'tv', 'mov', 'p'].map(product => {
+        const values = rows.map(dealer => dealer[product]?.act);
+        // Un total incompleto no debe parecer una cifra completa ni un cero.
+        const valid = values.length > 0 && values.every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0);
+        return [product, valid ? values.reduce((sum, value) => sum + value, 0) : null];
+      }));
+    }
+
     function updateStatusUI(count, dateStr, fileName, meta) {
+      const totals = calculatePortfolioTotals(CURRENT_DEALERS_MAP);
+      for (const [product, id] of [['fib', 'totalFibraAct'], ['tv', 'totalTvAct'], ['mov', 'totalPospagoAct'], ['p', 'totalPrepagoAct']]) {
+        const element = document.getElementById(id);
+        if (element) element.textContent = formatMetric(totals[product]);
+      }
       const countEl = document.getElementById('dbDealersCount');
       const dateEl = document.getElementById('dbLastUpdated');
       const badge = document.getElementById('syncStatusBadge');
@@ -881,54 +836,16 @@
       return DEALER_ALIASES.get(id);
     }
 
-    window.toggleAliasEditor = function() {
-      if (!activeDealer) return;
-      const box = document.getElementById('aliasEditorBox');
-      const input = document.getElementById('aliasInput');
-      if (!box || !input) return;
-
-      const isHidden = box.classList.contains('hidden');
-      if (isHidden) {
-        input.value = getDealerAlias(activeDealer.id);
-        box.classList.remove('hidden');
-        input.focus();
-      } else {
-        box.classList.add('hidden');
-      }
-    };
-
-    window.saveDealerAlias = function() {
-      if (!activeDealer) return;
-      const input = document.getElementById('aliasInput');
-      const val = input ? input.value.trim() : '';
-      const key = ALIAS_KEY_PREFIX + activeDealer.id;
-
-      if (!val) {
-        localStorage.removeItem(key);
-      } else {
-        localStorage.setItem(key, val);
-      }
-      DEALER_ALIASES.set(activeDealer.id, val);
-
-      document.getElementById('aliasEditorBox').classList.add('hidden');
-      renderAliasUI(activeDealer.id);
-      renderRecents();
-      window.showToast(val ? "Rótulo / dirección guardado ✓" : "Rótulo eliminado");
-    };
-
     function renderAliasUI(id) {
       const alias = getDealerAlias(id);
       const badge = document.getElementById('dAliasBadge');
       const text = document.getElementById('dAliasText');
-      const btn = document.getElementById('editAliasBtn');
 
       if (alias) {
         text.textContent = alias;
         badge.classList.remove('hidden');
-        btn.textContent = "✏️ Editar";
       } else {
         badge.classList.add('hidden');
-        btn.textContent = "+ Añadir nombre comercial / calle";
       }
     }
 
@@ -1012,6 +929,7 @@
         };
 
         meta.projectionSchema = 2;
+        meta.historySchema = 1;
         // Guardamos primero en disco: si falla la cuota, no dejamos la app a medias
         localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(parsedMap));
         localStorage.setItem(STORAGE_KEY_META, JSON.stringify(meta));
@@ -1085,7 +1003,7 @@
       const idxFibM2    = getColIdx(['fibra m-2'], 19);
       const idxFibM1    = getColIdx(['fibra m-1'], 20);
 
-      // COLUMNA V (índice 21) = Móvil contrato actual
+      // COLUMNA V (índice 21) = Móvil pospago actual
       const idxMovAct   = getColIdx(['movil', 'pospago'], 21, ['new', 'proy', 'ly', 'm-']);
       const idxMovProy  = getColIdx(['proy pospago', 'proy movil'], 23);
       const idxMovLy    = getColIdx(['posp.ly', 'posp ly', 'movil ly'], 24);
@@ -1118,9 +1036,9 @@
       if (missing.length) throw new Error('Faltan columnas necesarias: ' + missing.join(', '));
 
       const getInt = (row, idx) => {
-        if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null || row[idx] === '') return 0;
-        const n = parseFloat(String(row[idx]).replace(',', '.'));
-        return isNaN(n) ? 0 : Math.round(n);
+        if (idx === -1 || idx === undefined || row[idx] == null || String(row[idx]).trim() === '') return null;
+        const n = Number(String(row[idx]).trim().replace(',', '.'));
+        return Number.isFinite(n) && n >= 0 ? Math.round(n) : null;
       };
 
       const getDec = (row, idx) => {
@@ -1356,7 +1274,6 @@
 
     // --- RENDER DEDICATED DEALER CARD ---
     function renderDealerCard(d) {
-      flushPendingNote();
       activeDealer = d;
       saveToRecents(d);
 
@@ -1371,8 +1288,6 @@
       setTxt('dLocation', `${d.cp} · ${d.z} (${d.m})`);
 
       // Alias UI
-      const aliasBox = document.getElementById('aliasEditorBox');
-      if (aliasBox) aliasBox.classList.add('hidden');
       renderAliasUI(d.id);
 
       // Badges
@@ -1424,8 +1339,6 @@
       setTxt('pre_act', d.p.act);
       setTxt('pre_proy', d.p.proy);
       setTxt('pre_ly', d.p.ly);
-      updateTrendBadge('trendPrepagoBadge', d.p.act, d.p.m1, d.p.proy, false, 'p');
-      updateLyComparison('lyPrepagoBadge', 'pre_ly_box', d.p.proy, d.p.ly, 'p');
 
       // 2. Fibra Metrics (Simplificar si no tiene acceso ni histórico)
       const hasAnyFibraHistory = (d.fib.m3 + d.fib.m2 + d.fib.m1 + d.fib.act + d.fib.ly) > 0 || d.fib.proy > 0;
@@ -1435,9 +1348,6 @@
       if (!d.f_acc && !hasAnyFibraHistory) {
         if (fibGrid) fibGrid.classList.add('hidden');
         if (fibCompact) fibCompact.classList.remove('hidden');
-        updateTrendBadge('trendFibraBadge', 0, 0, 0, true);
-        const lyFibra = document.getElementById('lyFibraBadge');
-        if (lyFibra) lyFibra.classList.add('hidden');
       } else {
         if (fibGrid) fibGrid.classList.remove('hidden');
         if (fibCompact) fibCompact.classList.add('hidden');
@@ -1447,8 +1357,6 @@
         setTxt('fib_act', d.fib.act);
         setTxt('fib_proy', d.fib.proy);
         setTxt('fib_ly', d.fib.ly);
-        updateTrendBadge('trendFibraBadge', d.fib.act, d.fib.m1, d.fib.proy, false, 'fib');
-        updateLyComparison('lyFibraBadge', 'fib_ly_box', d.fib.proy, d.fib.ly, 'fib');
       }
 
       // 3. Móvil Metrics
@@ -1458,11 +1366,9 @@
       setTxt('mov_act', d.mov.act);
       setTxt('mov_proy', d.mov.proy);
       setTxt('mov_ly', d.mov.ly);
-      updateTrendBadge('trendMovilBadge', d.mov.act, d.mov.m1, d.mov.proy, false, 'mov');
-      updateLyComparison('lyMovilBadge', 'mov_ly_box', d.mov.proy, d.mov.ly, 'mov');
 
       // 4. TV (Ocultar cuando no aplica para evitar ruido visual)
-      const hasAnyTv = (d.tv.m3 + d.tv.m2 + d.tv.m1 + d.tv.act) > 0;
+      const hasAnyTv = [d.tv.m3, d.tv.m2, d.tv.m1, d.tv.act, d.tv.proy].some(value => value > 0);
       const tvCard = document.getElementById('cardTv');
       if (tvCard) {
         if (!d.f_acc && !hasAnyTv) {
@@ -1474,11 +1380,10 @@
           setTxt('tv_m1', d.tv.m1);
           setTxt('tv_act', d.tv.act);
           setTxt('tv_proy', d.tv.proy);
+          setTxt('tv_ly', d.tv.ly);
         }
       }
 
-      // Load Visit Notes
-      loadDealerNote(d.id);
 
       // Toggle views
       document.getElementById('homeView').classList.add('hidden');
@@ -1489,8 +1394,10 @@
       window.scrollTo(0, 0);
     }
 
-    // Criterio compartido por indicadores, alertas y comparativas LY.
-    const TREND_RULES = { watchPct: -10, fallPct: -30, minLoss: { p: 3, fib: 2, mov: 2 } };
+    // Criterios simétricos internos; el resumen no muestra porcentajes.
+    const TREND_RULES = { similarRatio: 0.10, strongRatio: 0.30,
+      minChange: { fib: 1, tv: 1, mov: 1, p: 2 },
+      minStrongChange: { fib: 2, tv: 2, mov: 2, p: 3 } };
     function formatMetric(value) {
       return typeof value === 'number' && Number.isFinite(value)
         ? value.toLocaleString('es-ES', { maximumFractionDigits: 1 }) : 's/d';
@@ -1500,123 +1407,53 @@
       if (typeof proy !== 'number' || !Number.isFinite(proy) || proy < 0) return { state: 'missing' };
       if (typeof baseline !== 'number' || !Number.isFinite(baseline) || baseline < 0) return { state: 'noBaseline' };
       const diff = proy - baseline;
-      if (baseline === 0) return { state: proy > 0 ? 'new' : 'zero', diff, pct: null };
-      const pct = diff / baseline * 100;
-      const significantLoss = -diff >= (TREND_RULES.minLoss[product] || 2);
-      const state = pct <= TREND_RULES.fallPct && significantLoss ? 'fall'
-        : pct < TREND_RULES.watchPct && significantLoss ? 'watch'
-        : pct > 10 ? 'growth' : 'stable';
-      return { state, diff, pct };
+      if (baseline === 0) return { state: proy > 0 ? 'new' : 'stable' };
+      const magnitude = Math.abs(diff);
+      // Tolerancia para límites como 30 % al operar con medias decimales.
+      const tolerance = 1e-9;
+      if (magnitude <= baseline * TREND_RULES.similarRatio + tolerance ||
+          magnitude + tolerance < (TREND_RULES.minChange[product] || 1)) return { state: 'stable' };
+      const strong = magnitude + tolerance >= baseline * TREND_RULES.strongRatio &&
+        magnitude + tolerance >= (TREND_RULES.minStrongChange[product] || 2);
+      return { state: diff > 0 ? (strong ? 'strongGrowth' : 'slightGrowth') : (strong ? 'strongFall' : 'slightFall') };
     }
 
-    function projectionSummary(result) {
-      if (result.pct == null) return `diferencia ${result.diff > 0 ? '+' : ''}${formatMetric(result.diff)}`;
-      const pct = Math.abs(result.pct) < 0.05 ? 0 : result.pct;
-      return `${pct > 0 ? '+' : ''}${formatMetric(pct)} % · ${result.diff > 0 ? '+' : ''}${formatMetric(result.diff)} uds.`;
+    function historicalAverage(metrics) {
+      const months = [metrics?.m1, metrics?.m2, metrics?.m3];
+      return months.every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0)
+        ? months.reduce((sum, value) => sum + value, 0) / 3 : null;
     }
 
-    function updateTrendBadge(elementId, act, m1, proy, isNoAccess = false, product = 'fib') {
-      const el = document.getElementById(elementId);
-      if (!el) return;
-
-      if (isNoAccess) {
-        el.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-500';
-        el.textContent = 'Sin acceso comercial';
-        return;
-      }
-
-      const result = evaluateProjection(proy, m1, product);
-      const labels = { missing: 'Sin proyección', noBaseline: 'M-1: s/d', zero: 'Proy: 0 · M-1: 0',
-        new: '▲ Proy positiva · M-1: 0', fall: '▼ Caída prevista', watch: '↘ Seguimiento',
-        growth: '▲ Mejora prevista', stable: '≈ En línea / variación menor' };
-      const color = result.state === 'fall' ? 'bg-rose-100 text-rose-800'
-        : result.state === 'watch' ? 'bg-amber-100 text-amber-900'
-        : ['growth', 'new'].includes(result.state) ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600';
-      el.className = `text-[10px] font-bold px-2 py-0.5 rounded ${color}`;
-      el.textContent = labels[result.state];
-      el.title = `PROY ${formatMetric(proy)} · M-1 ${formatMetric(m1)}` +
-        (result.diff !== undefined ? ` · ${projectionSummary(result)}` : '');
+    function salesComparisonText(proy, baseline, product, yearly = false) {
+      const state = evaluateProjection(proy, baseline, product).state;
+      const labels = {
+        missing: 'Sin proyección disponible',
+        noBaseline: yearly ? 's/d' : 'Histórico insuficiente',
+        stable: 'Ventas previstas similares',
+        slightFall: 'Ventas previstas ligeramente por debajo',
+        strongFall: 'Ventas previstas claramente por debajo',
+        slightGrowth: 'Ventas previstas ligeramente por encima',
+        strongGrowth: 'Ventas previstas claramente por encima',
+        new: 'Ventas previstas frente a una referencia sin ventas'
+      };
+      return labels[state];
     }
 
-    // Semáforo comparativo contra el Año Anterior (vs LY)
-    function updateLyComparison(badgeId, boxId, proy, ly, product = 'fib') {
-      const badge = document.getElementById(badgeId);
-      const box = document.getElementById(boxId);
-      if (!badge || !box) return;
-
-      const result = evaluateProjection(proy, ly, product);
-      if (['zero', 'missing', 'noBaseline', 'stable'].includes(result.state)) {
-        badge.classList.add('hidden');
-        box.className = "rounded py-0.5";
-        return;
-      }
-
-      if (result.state === 'fall' || result.state === 'watch') {
-        badge.textContent = `Proy vs LY: ${projectionSummary(result)}`;
-        badge.className = result.state === 'fall'
-          ? 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-800 border border-rose-200'
-          : 'text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200';
-        badge.classList.remove('hidden');
-        box.className = result.state === 'fall' ? 'bg-rose-50/80 rounded py-0.5 border border-rose-200' : 'bg-amber-50 rounded py-0.5';
-      } else if (result.state === 'growth' || result.state === 'new') {
-        badge.textContent = ly === 0 ? `Proy ${formatMetric(proy)} · LY: 0` : `Proy vs LY: ${projectionSummary(result)}`;
-        badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200";
-        badge.classList.remove('hidden');
-        box.className = "bg-emerald-50/70 rounded py-0.5";
-      } else {
-        badge.classList.add('hidden');
-        box.className = "rounded py-0.5";
-      }
-    }
-
-    // --- TACTICAL RECOMMENDATION ENGINE (Con detección de Nuevo + Potencial LY) ---
+    // Un único resumen: dos comparativas independientes para cada producto.
     function renderTacticalFocus(d) {
       const box = document.getElementById('dTacticalAlert');
       const title = document.getElementById('dTacticalTitle');
       const list = document.getElementById('dTacticalList');
       if (!box || !title || !list) return;
 
-      const products = [['p', 'Prepago'], ['fib', 'Fibra'], ['mov', 'Contrato']];
-      const items = [];
-      let severity = 0;
-      products.forEach(([key, label]) => {
-        const metrics = d[key];
-        if (key === 'fib' && !d.f_acc && ![metrics.act, metrics.m1, metrics.ly, metrics.proy].some(v => v > 0)) return;
-        const result = evaluateProjection(metrics.proy, metrics.m1, key);
-        const labels = { missing: 'Sin proyección disponible', noBaseline: 'M-1: s/d', zero: 'Proyección y M-1 a cero',
-          new: 'Proyección positiva sin ventas en M-1', fall: 'Caída prevista', watch: 'Seguimiento: previsión inferior',
-          growth: 'Mejora prevista', stable: 'En línea / variación menor' };
-        if (result.state === 'fall') severity = 2;
-        else if (result.state === 'watch') severity = Math.max(severity, 1);
-        const difference = result.diff !== undefined ? ` · ${projectionSummary(result)}` : '';
-        items.push(`<strong>${label}: ${labels[result.state]}.</strong> PROY: ${formatMetric(metrics.proy)} · M-1: ${formatMetric(metrics.m1)}${difference}. ACT: ${formatMetric(metrics.act)}.`);
-
-        const yearly = evaluateProjection(metrics.proy, metrics.ly, key);
-        if (['fall', 'watch', 'growth', 'new'].includes(yearly.state)) {
-          if (yearly.state === 'fall') severity = 2;
-          else if (yearly.state === 'watch') severity = Math.max(severity, 1);
-          const yearlyLabel = yearly.state === 'new' ? 'Proyección positiva con LY a cero'
-            : yearly.state === 'growth' ? 'Mejora prevista' : yearly.state === 'fall' ? 'Caída prevista' : 'Seguimiento';
-          items.push(`<strong>${label} vs LY: ${yearlyLabel}.</strong> PROY: ${formatMetric(metrics.proy)} · LY: ${formatMetric(metrics.ly)} · ${projectionSummary(yearly)}.`);
-        }
-      });
-
-      const isZeroAll = [d.p, d.mov, d.fib, d.tv].every(metrics => metrics.act === 0);
-      if (isZeroAll) {
-        items.push('<strong>Sin activaciones registradas todavía:</strong> comprobar acceso a Dealercare y stock de SIMs. Es un dato acumulado, no una comparación mensual.');
-        if (d.ff_new) items.push(`<strong>Alta reciente (${escapeHtml(d.ff)}):</strong> reforzar formación inicial y visibilidad del punto.`);
-      } else if (d.f_acc && d.fib.act === 0) {
-        items.push('<strong>Fibra pendiente de activar:</strong> habilitada pero todavía sin ventas registradas. Revisar oportunidades, cartelería y argumento comercial.');
-      }
-      const themeClass = severity === 2 ? 'p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-950 shadow-xs'
-        : severity === 1 ? 'p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-950 shadow-xs'
-        : 'p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800 shadow-xs';
-      const headerText = severity === 2 ? 'Caídas previstas'
-        : severity === 1 ? 'Puntos de seguimiento' : 'Tu visita, en contexto';
-
-      box.className = themeClass;
-      title.textContent = headerText;
-      list.innerHTML = items.map(it => `<li>${it}</li>`).join('');
+      const products = [['fib', 'Fibra Smart'], ['tv', 'TV'], ['mov', 'Pospago'], ['p', 'Prepago']];
+      title.textContent = 'Resumen de ventas';
+      list.innerHTML = products.map(([key, label]) => {
+        const metrics = d[key] || {};
+        const recent = salesComparisonText(metrics.proy, historicalAverage(metrics), key);
+        const yearly = salesComparisonText(metrics.proy, metrics.ly, key, true);
+        return `<li><strong>${label}</strong><p><span class="comparison-label">Últimos 3 meses:</span> ${recent}.</p><p><span class="comparison-label">Año anterior:</span> ${yearly}${yearly === 's/d' ? '' : '.'}</p></li>`;
+      }).join('');
     }
 
     // --- RECENT SEARCHES MANAGER ---
@@ -1675,62 +1512,6 @@
       window.showToast("Historial borrado");
     };
 
-    // --- NOTES MANAGEMENT & 1-TOUCH CHIPS ---
-    window.appendQuickNote = function(snippet) {
-      if (!activeDealer) return;
-      const noteField = document.getElementById('visitNotes');
-      if (!noteField) return;
-
-      const current = noteField.value.trim();
-      if (current.includes(snippet)) return;
-      noteField.value = current ? `${current} ${snippet}` : snippet;
-      saveNote();
-    };
-
-    window.handleNoteInput = function() {
-      clearTimeout(noteDebounceTimer);
-      noteDebounceTimer = setTimeout(saveNote, 400);
-    };
-
-    // Fuerza el guardado de una nota pendiente (debounce de 400 ms)
-    function flushPendingNote() {
-      if (noteDebounceTimer) {
-        clearTimeout(noteDebounceTimer);
-        noteDebounceTimer = null;
-      }
-      if (activeDealer) saveNote();
-    }
-
-    // Guardado de seguridad al salir o al pasar la app a segundo plano
-    window.addEventListener('pagehide', flushPendingNote);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') flushPendingNote();
-    });
-
-    function saveNote() {
-      if (!activeDealer) return;
-      const text = document.getElementById('visitNotes').value.trim();
-      const key = NOTES_KEY_PREFIX + activeDealer.id;
-      const alertBadge = document.getElementById('notesSavedAlert');
-
-      if (!text) {
-        localStorage.removeItem(key);
-      } else {
-        localStorage.setItem(key, text);
-        if (alertBadge) {
-          alertBadge.classList.remove('hidden');
-          setTimeout(() => alertBadge.classList.add('hidden'), 2000);
-        }
-      }
-    }
-
-    function loadDealerNote(dealerId) {
-      const noteField = document.getElementById('visitNotes');
-      if (!noteField) return;
-      const saved = localStorage.getItem(NOTES_KEY_PREFIX + dealerId);
-      noteField.value = saved || '';
-    }
-
     // --- COPIA DE SEGURIDAD: EXPORTAR / IMPORTAR / BORRAR TODO ---
     const BACKUP_VERSION = 1;
     const pad2 = n => String(n).padStart(2, '0');
@@ -1779,7 +1560,6 @@
 
     window.exportBackup = function() {
       try {
-        flushPendingNote();
         let meta = {};
         try { meta = JSON.parse(localStorage.getItem(STORAGE_KEY_META) || '{}') || {}; } catch(e) {}
         const payload = {
@@ -1819,7 +1599,6 @@
     window.handleImportBackup = async function(e) {
       const file = e.target.files[0];
       if (!file) return;
-      flushPendingNote();
       try {
         const text = await file.text();
         const data = JSON.parse(text);
@@ -1917,12 +1696,10 @@
     // --- WHATSAPP SHARE ---
     window.copyWhatsAppReport = function() {
       if (!activeDealer) return;
-      flushPendingNote();
       const d = activeDealer;
       const alias = getDealerAlias(d.id);
       const aliasLine = alias ? `🏷️ Rótulo: *${alias}*
 ` : '';
-      const savedNote = localStorage.getItem(NOTES_KEY_PREFIX + d.id) || "Sin observaciones adicionales.";
 
       const report = 
 `📍 *VISITA GPV*
@@ -1931,15 +1708,12 @@ ${aliasLine}📌 ${d.cp} · ${d.z} (${d.m})
 📶 Huella: ${d.h} | Fibra: ${d.f_acc ? 'Habilitada' : 'No'}${d.ff ? ' | Alta: ' + d.ff : ''}
 
 📊 *BALANCE COMERCIAL :*
-• Prepago: Act *${formatMetric(d.p.act)}* (Proy: ${formatMetric(d.p.proy)} | M-1: ${formatMetric(d.p.m1)} | LY: ${formatMetric(d.p.ly)})
-• Contrato: Act *${formatMetric(d.mov.act)}* (Proy: ${formatMetric(d.mov.proy)} | M-1: ${formatMetric(d.mov.m1)} | LY: ${formatMetric(d.mov.ly)})
-• Fibra: Act *${formatMetric(d.fib.act)}* (Proy: ${formatMetric(d.fib.proy)} | M-1: ${formatMetric(d.fib.m1)} | LY: ${formatMetric(d.fib.ly)})
-• TV: Act *${d.tv.act}*
+• Fibra Smart: Act *${formatMetric(d.fib.act)}* (Proy: ${formatMetric(d.fib.proy)} | M-1: ${formatMetric(d.fib.m1)} | M-2: ${formatMetric(d.fib.m2)} | M-3: ${formatMetric(d.fib.m3)} | LY: ${formatMetric(d.fib.ly)})
+• TV: Act *${formatMetric(d.tv.act)}* (Proy: ${formatMetric(d.tv.proy)} | M-1: ${formatMetric(d.tv.m1)} | M-2: ${formatMetric(d.tv.m2)} | M-3: ${formatMetric(d.tv.m3)} | LY: ${formatMetric(d.tv.ly)})
+• Móvil pospago: Act *${formatMetric(d.mov.act)}* (Proy: ${formatMetric(d.mov.proy)} | M-1: ${formatMetric(d.mov.m1)} | M-2: ${formatMetric(d.mov.m2)} | M-3: ${formatMetric(d.mov.m3)} | LY: ${formatMetric(d.mov.ly)})
+• Prepago: Act *${formatMetric(d.p.act)}* (Proy: ${formatMetric(d.p.proy)} | M-1: ${formatMetric(d.p.m1)} | M-2: ${formatMetric(d.p.m2)} | M-3: ${formatMetric(d.p.m3)} | LY: ${formatMetric(d.p.ly)})
 
-Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).
-
-📝 *Nota de visita:*
-"${savedNote}"`;
+Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).`;
 
       const tempArea = document.createElement("textarea");
       tempArea.value = report;
@@ -1960,7 +1734,6 @@ Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).
 
     // --- NAVIGATION HELPERS ---
     window.resetSearch = function() {
-      flushPendingNote();
       activeDealer = null;
       document.getElementById('dealerView').classList.add('hidden');
       document.getElementById('homeView').classList.remove('hidden');
@@ -2013,7 +1786,6 @@ Comparativas mensuales basadas en PROY (estimación del Excel, no cierre real).
 
     window.applyAppUpdate = function() {
       if (!swRegistration?.waiting) return;
-      flushPendingNote();
       reloadForUpdate = true;
       swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
     };
