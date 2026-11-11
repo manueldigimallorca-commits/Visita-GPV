@@ -1,5 +1,5 @@
 ============================================================
-  Cartera GPV · Visor Tactico  (v4.6.10)
+  Cartera GPV · Visor Tactico  (v4.6.11)
 ============================================================
 
 Que es
@@ -115,6 +115,11 @@ pertenece a otro comercial antes de sustituir la cartera.
 
 Actualizaciones
 ---------------
+v4.6.11: tarjetas de productos siempre en una columna vertical,
+tambien en tablet: Fibra Smart, TV, Movil pospago y Prepago.
+Orden de secciones: datos del distribuidor, ventas, resumen y
+boton de WhatsApp.
+
 v4.6.10: orden vertical en movil y tablet: datos del distribuidor,
 evolucion de ventas, resumen de ventas y boton de WhatsApp.
 

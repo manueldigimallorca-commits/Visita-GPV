@@ -1,0 +1,4 @@
+/* Compilado una vez: no hay compilador CSS ni CDN en el navegador. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
