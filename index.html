@@ -177,21 +177,11 @@
     
     <!-- Database Status Bar -->
     <div id="portfolioStatus" class="bg-white rounded-2xl border border-slate-200/90 p-3 mb-3.5">
-      <div class="flex items-center justify-between">
+      <div class="portfolio-heading flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <div>
-            <div class="text-xs font-bold text-slate-900">
-              <span id="dbDealersCount">0</span> <span id="dbDealersLabel">distribuidores en tu cartera</span>
-            </div>
-            <div id="portfolioTotals" aria-label="Ventas actuales totales de la cartera" role="status">
-              <span class="totals-label">ACT</span>
-              <span>Fibra <strong id="totalFibraAct">s/d</strong></span>
-              <span>TV <strong id="totalTvAct">s/d</strong></span>
-              <span>Pospago <strong id="totalPospagoAct">s/d</strong></span>
-              <span>Prepago <strong id="totalPrepagoAct">s/d</strong></span>
-            </div>
-            <div id="dbLastUpdated" class="text-[10px] text-slate-500 font-medium">Base inicial cargada</div>
+          <div class="text-xs font-bold text-slate-900">
+            <span id="dbDealersCount">0</span> <span id="dbDealersLabel">distribuidores en tu cartera</span>
           </div>
         </div>
         <button 
@@ -201,6 +191,19 @@
           Cambiar Excel
         </button>
       </div>
+      <section id="portfolioTotals" aria-labelledby="portfolioTotalsTitle" role="status">
+        <div class="totals-heading">
+          <h3 id="portfolioTotalsTitle">Ventas actuales</h3>
+          <span>Acumulado del Excel · ACT</span>
+        </div>
+        <dl class="totals-grid">
+          <div class="total-product total-fibra"><dt>Fibra</dt><dd><strong id="totalFibraAct">s/d</strong></dd></div>
+          <div class="total-product total-tv"><dt>TV</dt><dd><strong id="totalTvAct">s/d</strong></dd></div>
+          <div class="total-product total-pospago"><dt>Pospago</dt><dd><strong id="totalPospagoAct">s/d</strong></dd></div>
+          <div class="total-product total-prepago"><dt>Prepago</dt><dd><strong id="totalPrepagoAct">s/d</strong></dd></div>
+        </dl>
+      </section>
+      <div id="dbLastUpdated" class="text-[10px] text-slate-500 font-medium">Base inicial cargada</div>
     </div>
 
     <!-- Main Search Card -->
@@ -395,7 +398,7 @@
 
         <!-- Tabla 6 columnas si tiene acceso o histórico -->
         <div id="fibraGrid" class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div class="bg-sky-100/70 rounded py-0.5">
+          <div class="actual-cell">
             <span class="block text-[9px] text-sky-900 font-black uppercase">ACT</span>
             <span id="fib_act" class="text-xs font-black text-sky-950">0</span>
           </div>
@@ -415,7 +418,7 @@
             <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
             <span id="fib_m3" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div id="fib_ly_box" class="rounded py-0.5">
+          <div id="fib_ly_box" class="yearly-cell">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
             <span id="fib_ly" class="text-xs font-bold text-slate-500">0</span>
           </div>
@@ -432,7 +435,7 @@
           <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-violet-50 text-violet-800">Servicio TV</span>
         </div>
         <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div>
+          <div class="actual-cell">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">ACT</span>
             <span id="tv_act" class="text-xs font-bold text-slate-700">0</span>
           </div>
@@ -452,7 +455,7 @@
             <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
             <span id="tv_m3" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div>
+          <div class="yearly-cell">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
             <span id="tv_ly" class="text-xs font-bold text-slate-500">s/d</span>
           </div>
@@ -469,7 +472,7 @@
         </div>
 
         <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div class="bg-indigo-100/70 rounded py-0.5">
+          <div class="actual-cell">
             <span class="block text-[9px] text-indigo-900 font-black uppercase">ACT</span>
             <span id="mov_act" class="text-xs font-black text-indigo-950">0</span>
           </div>
@@ -489,7 +492,7 @@
             <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
             <span id="mov_m3" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div id="mov_ly_box" class="rounded py-0.5">
+          <div id="mov_ly_box" class="yearly-cell">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
             <span id="mov_ly" class="text-xs font-bold text-slate-500">0</span>
           </div>
@@ -506,7 +509,7 @@
         </div>
 
         <div class="grid grid-cols-6 gap-1 text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
-          <div>
+          <div class="actual-cell">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">ACT</span>
             <span id="pre_act" class="text-xs font-bold text-slate-700">0</span>
           </div>
@@ -526,7 +529,7 @@
             <span class="block text-[9px] text-slate-400 font-bold uppercase">M-3</span>
             <span id="pre_m3" class="text-xs font-bold text-slate-700">0</span>
           </div>
-          <div id="pre_ly_box" class="rounded py-0.5">
+          <div id="pre_ly_box" class="yearly-cell">
             <span class="block text-[9px] text-slate-400 font-bold uppercase">LY</span>
             <span id="pre_ly" class="text-xs font-bold text-slate-500">0</span>
           </div>
@@ -535,6 +538,7 @@
     </div>
 
     <!-- Foco de visita: después de las ventas en móvil, a su lado en tablet. -->
+    <div id="dealerSummary">
     <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800">
       <div class="font-black text-xs tracking-tight flex items-center gap-1.5 mb-2">
         <span id="dTacticalTitle">Resumen de ventas</span>
@@ -554,6 +558,7 @@
         </svg>
         <span>Copiar resumen para WhatsApp</span>
       </button>
+    </div>
     </div>
 
     <!-- Extra Bottom Padding for mobile navigation bars -->
@@ -644,7 +649,7 @@
       </div>
 
       <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-        <span>Cartera GPV · v4.6.5</span>
+        <span>Cartera GPV · v4.6.9</span>
         <span>Sin datos precargados</span>
       </div>
     </div>
@@ -1425,10 +1430,11 @@
     }
 
     function salesComparisonText(proy, baseline, product, yearly = false) {
+      if (yearly && (typeof baseline !== 'number' || !Number.isFinite(baseline) || baseline < 0)) return 'Sin datos';
       const state = evaluateProjection(proy, baseline, product).state;
       const labels = {
         missing: 'Sin proyección disponible',
-        noBaseline: yearly ? 's/d' : 'Histórico insuficiente',
+        noBaseline: yearly ? 'Sin datos' : 'Histórico insuficiente',
         stable: 'Ventas previstas similares',
         slightFall: 'Ventas previstas ligeramente por debajo',
         strongFall: 'Ventas previstas claramente por debajo',
@@ -1452,7 +1458,7 @@
         const metrics = d[key] || {};
         const recent = salesComparisonText(metrics.proy, historicalAverage(metrics), key);
         const yearly = salesComparisonText(metrics.proy, metrics.ly, key, true);
-        return `<li><strong>${label}</strong><p><span class="comparison-label">Últimos 3 meses:</span> ${recent}.</p><p><span class="comparison-label">Año anterior:</span> ${yearly}${yearly === 's/d' ? '' : '.'}</p></li>`;
+        return `<li><strong>${label}</strong><p><span class="comparison-label">Últimos 3 meses:</span> ${recent}.</p><p><span class="comparison-label">${yearly === 'Sin datos' ? 'Año anterior-' : 'Año anterior:'}</span> ${yearly}${yearly === 'Sin datos' ? '' : '.'}</p></li>`;
       }).join('');
     }
 

@@ -1,5 +1,5 @@
 ============================================================
-  Cartera GPV · Visor Tactico  (v4.6.5)
+  Cartera GPV · Visor Tactico  (v4.6.9)
 ============================================================
 
 Que es
@@ -84,7 +84,8 @@ Resumen de ventas (v4.6.5)
   Fibra, TV y Pospago: minimo 1 unidad, fuerte desde 2.
   Prepago: minimo 2 unidades, fuerte desde 3.
 - Se necesitan los tres meses validos para calcular la media.
-  Si falta alguno: Historico insuficiente. LY ausente: s/d.
+  Si falta alguno: Historico insuficiente. LY ausente en el
+  resumen: "Año anterior- Sin datos". En la tabla sigue como s/d.
   TV no dispone de LY en la estructura actual del Excel.
 - Referencia cero y PROY positiva: ventas previstas frente a
   una referencia sin ventas. Ambos a cero: ventas similares.
@@ -114,6 +115,19 @@ pertenece a otro comercial antes de sustituir la cartera.
 
 Actualizaciones
 ---------------
+v4.6.9: LY ausente muestra "Año anterior- Sin datos" para
+los cuatro productos. LY cero sigue siendo un dato valido.
+
+v4.6.8: colores por periodo comunes a todos los productos:
+ACT azul, PROY amarillo, M-1 celeste, M-2 lavanda, M-3 verde
+agua y LY melocoton. Los colores no indican rendimiento.
+
+v4.6.7: el boton de WhatsApp queda agrupado debajo del resumen
+de ventas en todos los tamanos de pantalla.
+
+v4.6.6: resumen ACT con nombre y cifra separados por producto,
+en dos columnas en movil pequeno y cuatro en tablet.
+
 v4.6.5: resumen unico cualitativo frente a media trimestral y LY,
 sin porcentajes ni alertas duplicadas. Historico ausente es s/d.
 
