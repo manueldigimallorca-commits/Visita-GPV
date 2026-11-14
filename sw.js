@@ -3,7 +3,7 @@
  * Cache-first evita esperas de red y mezclar HTML/CSS de versiones distintas.
  */
 
-const VERSION = 'v4.6.14';
+const VERSION = 'v4.7.1';
 const CACHE_STATIC = `cartera-gpv-static-${VERSION}`;
 
 const APP_FILE = './index.html';

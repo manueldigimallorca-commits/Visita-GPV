@@ -2,7 +2,7 @@
 <html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="app-version" content="v4.6.14">
+  <meta name="app-version" content="v4.7.1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Cartera GPV | Consulta Pre-Visita</title>
   
@@ -48,8 +48,8 @@
       #settingsPanel { border-radius: 1rem; }
     }
   </style>
-  <link rel="stylesheet" href="./assets/utilities.css?v=v4.6.14">
-  <link rel="stylesheet" href="./assets/app.css?v=v4.6.14">
+  <link rel="stylesheet" href="./assets/utilities.css?v=v4.7.1">
+  <link rel="stylesheet" href="./assets/app.css?v=v4.7.1">
 </head>
 
 <body class="bg-slate-100 text-slate-800 antialiased font-sans min-h-full flex flex-col selection:bg-brand-yellow selection:text-brand-navy">
@@ -192,16 +192,17 @@
           Cambiar Excel
         </button>
       </div>
+      <button id="editGoalsBtn" type="button" class="goals-trigger" onclick="window.openGoals()">Añadir objetivos</button>
       <section id="portfolioTotals" aria-labelledby="portfolioTotalsTitle" role="status">
         <div class="totals-heading">
           <h3 id="portfolioTotalsTitle">Ventas actuales</h3>
           <span>Acumulado del Excel · ACT</span>
         </div>
         <dl class="totals-grid">
-          <div class="total-product total-fibra"><dt>Fibra</dt><dd><strong id="totalFibraAct">s/d</strong></dd></div>
-          <div class="total-product total-tv"><dt>TV</dt><dd><strong id="totalTvAct">s/d</strong></dd></div>
-          <div class="total-product total-pospago"><dt>Pospago</dt><dd><strong id="totalPospagoAct">s/d</strong></dd></div>
-          <div class="total-product total-prepago"><dt>Prepago</dt><dd><strong id="totalPrepagoAct">s/d</strong></dd></div>
+          <div class="total-product total-fibra"><dt>Fibra</dt><dd><strong id="totalFibraAct">s/d</strong><span class="total-goal"><span class="goal-label">Objetivo</span><span id="goalFibraPercent" class="goal-percentage"></span></span></dd></div>
+          <div class="total-product total-tv"><dt>TV</dt><dd><strong id="totalTvAct">s/d</strong><span class="total-goal"><span class="goal-label">Objetivo</span><span id="goalTvPercent" class="goal-percentage"></span></span></dd></div>
+          <div class="total-product total-pospago"><dt>Pospago</dt><dd><strong id="totalPospagoAct">s/d</strong><span class="total-goal"><span class="goal-label">Objetivo</span><span id="goalPospagoPercent" class="goal-percentage"></span></span></dd></div>
+          <div class="total-product total-prepago"><dt>Prepago</dt><dd><strong id="totalPrepagoAct">s/d</strong><span class="total-goal"><span class="goal-label">Objetivo</span><span id="goalPrepagoPercent" class="goal-percentage"></span></span></dd></div>
         </dl>
       </section>
       <div id="dbLastUpdated" class="text-[10px] text-slate-500 font-medium">Base inicial cargada</div>
@@ -542,12 +543,12 @@
     <div id="dealerSummary">
     <div id="dTacticalAlert" class="p-4 rounded-2xl border bg-slate-50 border-slate-300 text-slate-800">
       <div class="font-black text-xs tracking-tight flex items-center gap-1.5 mb-2">
-        <span id="dTacticalTitle">Resumen de ventas</span>
+        <span id="dTacticalTitle">Comparativa de ventas</span>
       </div>
       <ul id="dTacticalList" class="text-xs leading-relaxed"><!-- Contenido generado con las proyecciones. --></ul>
     </div>
 
-    <!-- Resumen de ventas, sin campos de edición. -->
+    <!-- Copia del informe, después de la comparativa y sin campos de edición. -->
     <div id="dealerShare">
       <!-- Quick Action: Share to WhatsApp -->
       <button 
@@ -593,7 +594,7 @@
         >
           <span>
             <span class="block text-xs font-bold text-slate-900">Exportar copia de seguridad</span>
-            <span class="block text-[10px] text-slate-500">Cartera y datos antiguos guardados (.json)</span>
+            <span class="block text-[10px] text-slate-500">Cartera, objetivos y datos antiguos (.json)</span>
           </span>
           <span class="text-brand-blue font-black text-base">⬇</span>
         </button>
@@ -644,16 +645,39 @@
             Borrar todos los datos de este dispositivo
           </button>
           <p class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
-            Elimina cartera, notas, rótulos e historial. No se puede deshacer.
+            Elimina cartera, objetivos, notas, rótulos e historial. No se puede deshacer.
           </p>
         </div>
       </div>
 
       <div class="px-4 py-2 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-        <span>Cartera GPV · v4.6.14</span>
+        <span>Cartera GPV · v4.7.1</span>
         <span>Sin datos precargados</span>
       </div>
     </div>
+  </div>
+
+  <!-- Objetivos personales: valores actuales, sin mes ni histórico. -->
+  <div id="goalsModal" class="hidden" onclick="if (event.target === this) window.closeGoals()">
+    <section id="goalsPanel" role="dialog" aria-modal="true" aria-labelledby="goalsTitle" aria-describedby="goalsHint" tabindex="-1">
+      <div class="goals-dialog-heading">
+        <h2 id="goalsTitle">Añadir objetivos</h2>
+        <button type="button" class="goals-close" onclick="window.closeGoals()" aria-label="Cerrar objetivos">✕</button>
+      </div>
+      <form id="goalsForm" onsubmit="window.saveGoals(event)" novalidate>
+        <p id="goalsHint">Introduce el objetivo de cada producto. Puedes dejar en blanco los que no tengas.</p>
+        <div class="goals-fields">
+          <div><label for="goalFibraInput">Fibra</label><input id="goalFibraInput" name="fib" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="goalsHint goalsError" placeholder="Opcional"></div>
+          <div><label for="goalTvInput">TV</label><input id="goalTvInput" name="tv" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="goalsHint goalsError" placeholder="Opcional"></div>
+          <div><label for="goalPospagoInput">Pospago</label><input id="goalPospagoInput" name="mov" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="goalsHint goalsError" placeholder="Opcional"></div>
+          <div><label for="goalPrepagoInput">Prepago</label><input id="goalPrepagoInput" name="p" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="goalsHint goalsError" placeholder="Opcional"></div>
+        </div>
+        <p id="goalsError" role="alert" class="hidden"></p>
+        <p class="goals-storage-hint">Se guardan solo en este dispositivo. Al cambiar de mes, edítalos o bórralos manualmente.</p>
+        <div class="goals-actions"><button type="button" class="goals-cancel" onclick="window.closeGoals()">Cancelar</button><button type="submit" class="goals-save">Guardar objetivos</button></div>
+        <button id="resetGoalsBtn" type="button" onclick="window.resetGoals()">Borrar objetivos</button>
+      </form>
+    </section>
   </div>
 
   <!-- ================= LOGIC & REAL EXCEL PARSER ================= -->
@@ -663,6 +687,7 @@
     const STORAGE_KEY_DB = 'digi_dealers_db_v4';
     const STORAGE_KEY_META = 'digi_dealers_meta_v4';
     const STORAGE_KEY_RECENTS = 'digi_recents_ids';
+    const STORAGE_KEY_GOALS = 'digi_sales_goals_v1';
     const NOTES_KEY_PREFIX = 'notes_';
     const ALIAS_KEY_PREFIX = 'digi_alias_';
 
@@ -671,6 +696,14 @@
     let activeDealer = null;
     const DEALER_ALIASES = new Map();
     let settingsReturnFocus = null;
+    let goalsReturnFocus = null;
+    const GOAL_PRODUCTS = [
+      { key: 'fib', label: 'Fibra', input: 'goalFibraInput', output: 'goalFibraPercent' },
+      { key: 'tv', label: 'TV', input: 'goalTvInput', output: 'goalTvPercent' },
+      { key: 'mov', label: 'Pospago', input: 'goalPospagoInput', output: 'goalPospagoPercent' },
+      { key: 'p', label: 'Prepago', input: 'goalPrepagoInput', output: 'goalPrepagoPercent' }
+    ];
+    let SALES_GOALS = normalizeGoals({});
 
     const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
@@ -694,6 +727,20 @@
         window.selectDealer(row.getAttribute('data-dealer-id'));
       });
       document.addEventListener('keydown', (ev) => {
+        const goalsModal = document.getElementById('goalsModal');
+        if (!goalsModal.classList.contains('hidden')) {
+          if (ev.key === 'Escape') { ev.preventDefault(); window.closeGoals(); }
+          if (ev.key === 'Tab') {
+            const controls = [...goalsModal.querySelectorAll('button, input')].filter(el => !el.disabled && el.getClientRects().length);
+            const first = controls[0], last = controls[controls.length - 1];
+            if (ev.shiftKey && (document.activeElement === first || document.activeElement === document.getElementById('goalsPanel'))) {
+              ev.preventDefault(); last?.focus();
+            } else if (!ev.shiftKey && document.activeElement === last) {
+              ev.preventDefault(); first?.focus();
+            }
+          }
+          return;
+        }
         const modal = document.getElementById('settingsModal');
         if (!modal.classList.contains('hidden')) {
           if (ev.key === 'Escape') window.closeSettings();
@@ -725,6 +772,7 @@
     // Cada comercial sube su propio Excel y se guarda solo en su dispositivo.
     function loadDatabase() {
       DEALER_ALIASES.clear();
+      loadGoals();
       let stored = null;
       try { stored = localStorage.getItem(STORAGE_KEY_DB); } catch(e) {}
 
@@ -806,6 +854,7 @@
         const element = document.getElementById(id);
         if (element) element.textContent = formatMetric(totals[product]);
       }
+      renderGoals(totals);
       const countEl = document.getElementById('dbDealersCount');
       const dateEl = document.getElementById('dbLastUpdated');
       const badge = document.getElementById('syncStatusBadge');
@@ -835,6 +884,119 @@
         badge.className = 'text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded uppercase';
       }
     }
+
+    // --- OBJETIVOS: únicamente valores personales actuales, sin calendario ---
+    function normalizeGoals(values, strict = false) {
+      const source = values && typeof values === 'object' && !Array.isArray(values) ? values : {};
+      return Object.fromEntries(GOAL_PRODUCTS.map(({ key, label }) => {
+        const raw = source[key];
+        const text = raw == null ? '' : String(raw).trim();
+        if (!text) return [key, null];
+        const value = Number(text);
+        if (!/^[0-9]+$/.test(text) || !Number.isSafeInteger(value) || value <= 0) {
+          if (strict) {
+            const error = new Error(`${label}: introduce un número entero mayor que cero o deja el campo vacío.`);
+            error.product = key;
+            throw error;
+          }
+          return [key, null];
+        }
+        return [key, value];
+      }));
+    }
+
+    function loadGoals() {
+      try { SALES_GOALS = normalizeGoals(JSON.parse(localStorage.getItem(STORAGE_KEY_GOALS) || '{}')); }
+      catch (error) { SALES_GOALS = normalizeGoals({}); }
+    }
+
+    function calculateGoalProgress(actual, target) {
+      if (!Number.isSafeInteger(target) || target <= 0 || typeof actual !== 'number' || !Number.isFinite(actual) || actual < 0) return null;
+      const percentage = actual * 100 / target;
+      if (!Number.isFinite(percentage)) return null;
+      return { percentage, displayed: Math.floor(percentage), level: percentage >= 85 ? 'high' : percentage >= 60 ? 'medium' : 'low' };
+    }
+
+    function renderGoals(totals = calculatePortfolioTotals(CURRENT_DEALERS_MAP)) {
+      const hasGoals = Object.values(SALES_GOALS).some(value => value !== null);
+      const button = document.getElementById('editGoalsBtn');
+      if (button) button.textContent = hasGoals ? 'Editar objetivos' : 'Añadir objetivos';
+      for (const { key, label, output } of GOAL_PRODUCTS) {
+        const element = document.getElementById(output);
+        if (!element) continue;
+        const target = SALES_GOALS[key];
+        const result = calculateGoalProgress(totals[key], target);
+        element.textContent = target == null ? '' : result ? `${result.displayed.toLocaleString('es-ES')} %` : 's/d';
+        element.dataset.level = result ? result.level : '';
+        element.dataset.wide = result && result.displayed >= 1000 ? 'true' : 'false';
+        element.setAttribute('aria-label', target == null ? `Objetivo de ${label}: sin objetivo` : result ? `Objetivo de ${label}: ${result.displayed.toLocaleString('es-ES')} por ciento` : `Objetivo de ${label}: ventas actuales sin datos`);
+      }
+    }
+
+    function showGoalsError(message) {
+      const error = document.getElementById('goalsError');
+      error.textContent = message;
+      error.classList.toggle('hidden', !message);
+    }
+
+    window.openGoals = function() {
+      goalsReturnFocus = document.activeElement;
+      const hasGoals = Object.values(SALES_GOALS).some(value => value !== null);
+      document.getElementById('goalsTitle').textContent = hasGoals ? 'Editar objetivos' : 'Añadir objetivos';
+      showGoalsError('');
+      for (const { key, input } of GOAL_PRODUCTS) {
+        const field = document.getElementById(input);
+        field.value = SALES_GOALS[key] ?? '';
+        field.removeAttribute('aria-invalid');
+      }
+      document.getElementById('resetGoalsBtn').disabled = !hasGoals;
+      document.getElementById('goalsModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('goalsPanel').focus();
+    };
+
+    window.closeGoals = function() {
+      document.getElementById('goalsModal').classList.add('hidden');
+      document.body.style.overflow = '';
+      goalsReturnFocus?.focus();
+    };
+
+    window.saveGoals = function(event) {
+      event.preventDefault();
+      showGoalsError('');
+      const values = {};
+      for (const { key, input } of GOAL_PRODUCTS) {
+        const field = document.getElementById(input);
+        field.removeAttribute('aria-invalid');
+        values[key] = field.value;
+      }
+      try {
+        const goals = normalizeGoals(values, true);
+        localStorage.setItem(STORAGE_KEY_GOALS, JSON.stringify(goals));
+        SALES_GOALS = goals;
+        renderGoals();
+        window.closeGoals();
+        window.showToast('Objetivos guardados');
+      } catch (error) {
+        showGoalsError(error.product ? error.message : 'No se pudieron guardar los objetivos. Comprueba el espacio disponible y vuelve a intentarlo.');
+        if (error.product) {
+          const field = document.getElementById(GOAL_PRODUCTS.find(product => product.key === error.product).input);
+          field.setAttribute('aria-invalid', 'true');
+          field.focus();
+        }
+      }
+    };
+
+    window.resetGoals = function() {
+      if (!window.confirm('¿Borrar los objetivos de los cuatro productos? La cartera y las ventas no se modificarán.')) return;
+      try {
+        localStorage.removeItem(STORAGE_KEY_GOALS);
+        SALES_GOALS = normalizeGoals({});
+        renderGoals();
+        window.closeGoals();
+        window.showToast('Objetivos borrados');
+      } catch (error) { showGoalsError('No se pudieron borrar los objetivos. Vuelve a intentarlo.'); }
+    };
 
     // --- ALIAS / RÓTULO COMERCIAL HELPERS ---
     function getDealerAlias(id) {
@@ -1457,13 +1619,13 @@
       const list = document.getElementById('dTacticalList');
       if (!box || !title || !list) return;
 
-      const products = [['fib', 'Fibra Smart'], ['tv', 'TV'], ['mov', 'Pospago'], ['p', 'Prepago']];
-      title.textContent = 'Resumen de ventas';
+      const products = [['fib', 'Fibra'], ['tv', 'TV'], ['mov', 'Pospago'], ['p', 'Prepago']];
+      title.textContent = 'Comparativa de ventas';
       list.innerHTML = products.map(([key, label]) => {
         const metrics = d[key] || {};
         const recent = salesComparisonText(metrics.proy, historicalAverage(metrics), key);
         const yearly = salesComparisonText(metrics.proy, metrics.ly, key, true);
-        return `<li><strong>${label}</strong><p><span class="comparison-label">Últimos 3 meses:</span> ${recent}.</p><p><span class="comparison-label">${yearly === 'Sin datos' ? 'Año anterior-' : 'Año anterior:'}</span> ${yearly}${yearly === 'Sin datos' ? '' : '.'}</p></li>`;
+        return `<li><strong>${label}</strong><p><span class="comparison-label">PROY actual vs media de los últimos 3 meses:</span> ${recent}.</p><p><span class="comparison-label">PROY actual vs año anterior:</span> ${yearly}${yearly === 'Sin datos' ? '' : '.'}</p></li>`;
       }).join('');
     }
 
@@ -1581,6 +1743,7 @@
           meta: meta,
           notes: readAllPrefixed(NOTES_KEY_PREFIX),
           aliases: readAllPrefixed(ALIAS_KEY_PREFIX),
+          goals: SALES_GOALS,
           recents: getRecents()
         };
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -1618,18 +1781,23 @@
         const db = data.db && typeof data.db === 'object' ? data.db : {};
         const notes = data.notes && typeof data.notes === 'object' ? data.notes : {};
         const aliases = data.aliases && typeof data.aliases === 'object' ? data.aliases : {};
+        // Campo opcional: las copias antiguas conservan los objetivos actuales.
+        if (data.goals !== undefined && (!data.goals || typeof data.goals !== 'object' || Array.isArray(data.goals))) throw new Error('Los objetivos de la copia no son válidos');
+        const goals = data.goals === undefined ? null : normalizeGoals(data.goals, true);
         const nDb = Object.keys(db).length;
         const nNotes = Object.keys(notes).length;
         const nAlias = Object.keys(aliases).length;
+        const nGoals = goals ? Object.values(goals).filter(value => value !== null).length : 0;
 
-        if (nDb === 0 && nNotes === 0 && nAlias === 0) {
+        if (nDb === 0 && nNotes === 0 && nAlias === 0 && nGoals === 0) {
           throw new Error('La copia no contiene datos');
         }
 
         const resumen = [
           nDb ? `${nDb} distribuidores` : null,
           nNotes ? `${nNotes} notas` : null,
-          nAlias ? `${nAlias} rótulos` : null
+          nAlias ? `${nAlias} rótulos` : null,
+          goals ? `${nGoals} objetivos (sustituyen los actuales)` : null
         ].filter(Boolean).join(', ');
 
         const ok = window.confirm(
@@ -1637,6 +1805,7 @@
         );
         if (!ok) { e.target.value = ''; return; }
 
+        if (goals) localStorage.setItem(STORAGE_KEY_GOALS, JSON.stringify(goals));
         if (nDb > 0) {
           localStorage.setItem(STORAGE_KEY_DB, JSON.stringify(db));
           localStorage.setItem(STORAGE_KEY_META, JSON.stringify(data.meta || {}));
@@ -1675,7 +1844,7 @@
     window.wipeAllData = function() {
       const ok = window.confirm(
         '¿Borrar TODOS los datos de este dispositivo?\n\n' +
-        'Se eliminarán la cartera cargada, las notas de visita, los rótulos y el historial.\n\n' +
+        'Se eliminarán la cartera cargada, los objetivos, las notas de visita, los rótulos y el historial.\n\n' +
         'No se puede deshacer. Exporta antes una copia de seguridad si quieres conservarlos.'
       );
       if (!ok) return;
@@ -1686,9 +1855,11 @@
         localStorage.removeItem(STORAGE_KEY_DB);
         localStorage.removeItem(STORAGE_KEY_META);
         localStorage.removeItem(STORAGE_KEY_RECENTS);
+        localStorage.removeItem(STORAGE_KEY_GOALS);
 
         CURRENT_DEALERS_MAP = {};
         DEALER_ALIASES.clear();
+        SALES_GOALS = normalizeGoals({});
         activeDealer = null;
         document.getElementById('dealerView').classList.add('hidden');
         document.getElementById('homeView').classList.remove('hidden');
